@@ -1,18 +1,11 @@
-import { Component, ChangeEvent, FormEvent } from "react";
+import React, { Component } from "react";
 
 type Props = {
     tema: string;
-    adicionarCliente: (cliente: Cliente) => void;
+    adicionarCliente: (novoCliente: { nome: string; nomeSocial: string; cpf: string; dataEmissao: string }) => void; // Definindo a propriedade adicionarCliente
 };
 
 type State = {
-    nome: string;
-    nomeSocial: string;
-    cpf: string;
-    dataEmissao: string;
-};
-
-type Cliente = {
     nome: string;
     nomeSocial: string;
     cpf: string;
@@ -23,33 +16,34 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            nome: '',
-            nomeSocial: '',
-            cpf: '',
-            dataEmissao: ''
+            nome: "",
+            nomeSocial: "",
+            cpf: "",
+            dataEmissao: "",
         };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event: ChangeEvent<HTMLInputElement>) {
+    handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value } as Pick<State, keyof State>);
-    }
+        this.setState(prevState => ({
+            ...prevState,
+            [name]: value
+        } as Pick<State, keyof State>));
+    };
 
-    handleSubmit(event: FormEvent<HTMLFormElement>) {
+    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        alert("Cliente cadastrado com sucesso!");
         const { nome, nomeSocial, cpf, dataEmissao } = this.state;
-        const novoCliente: Cliente = { nome, nomeSocial, cpf, dataEmissao };
-        this.props.adicionarCliente(novoCliente);
+        const novoCliente = { nome, nomeSocial, cpf, dataEmissao };
+        this.props.adicionarCliente(novoCliente); // Chamando a função adicionarCliente passada por props
         this.setState({
-            nome: '',
-            nomeSocial: '',
-            cpf: '',
-            dataEmissao: ''
+            nome: "",
+            nomeSocial: "",
+            cpf: "",
+            dataEmissao: ""
         });
-    }
+    };
 
     render() {
         const { tema } = this.props;
@@ -59,57 +53,59 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
             <div className="container-fluid">
                 <form onSubmit={this.handleSubmit}>
                     <div className="input-group mb-3">
+                        <label htmlFor="nome">Nome</label>
                         <input
                             type="text"
                             className="form-control"
                             placeholder="Nome"
                             aria-label="Nome"
+                            aria-describedby="basic-addon1"
                             name="nome"
                             value={nome}
-                            onChange={this.handleChange}
+                            onChange={this.handleInputChange}
                         />
                     </div>
                     <div className="input-group mb-3">
+                        <label htmlFor="nomeSocial">Nome Social</label>
                         <input
                             type="text"
                             className="form-control"
                             placeholder="Nome social"
                             aria-label="Nome social"
+                            aria-describedby="basic-addon1"
                             name="nomeSocial"
                             value={nomeSocial}
-                            onChange={this.handleChange}
+                            onChange={this.handleInputChange}
                         />
                     </div>
                     <div className="input-group mb-3">
+                        <label htmlFor="cpf">CPF</label>
                         <input
                             type="text"
                             className="form-control"
                             placeholder="CPF"
                             aria-label="CPF"
+                            aria-describedby="basic-addon1"
                             name="cpf"
                             value={cpf}
-                            onChange={this.handleChange}
+                            onChange={this.handleInputChange}
                         />
                     </div>
                     <div className="input-group mb-3">
+                        <label htmlFor="dataEmissao">Data Emissão do CPF</label>
                         <input
-                            type="text"
+                            type="date"
                             className="form-control"
-                            placeholder="Data de emissão (dd/mm/yyyy)"
-                            aria-label="Data de emissão"
+                            placeholder="data"
+                            aria-label="data"
+                            aria-describedby="basic-addon1"
                             name="dataEmissao"
                             value={dataEmissao}
-                            onChange={this.handleChange}
+                            onChange={this.handleInputChange}
                         />
                     </div>
                     <div className="input-group mb-3">
-                        <button
-                            className="btn btn-outline-secondary"
-                            type="submit"
-                            style={{ background: tema }}
-                        >
-                            Cadastrar
-                        </button>
+                        <button className="btn btn-outline-secondary" type="submit" style={{ background: tema }}>Cadastrar</button>
                     </div>
                 </form>
             </div>
