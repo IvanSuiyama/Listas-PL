@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import BarraNavegacao from "./barraNavegacao";
-import ListaCliente from "./listaClientes";
-import FormularioCadastroCliente from "./formularioCadastroCliente";
-import FormularioCadastroPet from "./formularioPet";
-import ListaPet from "./listaPet";
+import ListaCliente from "./clientes/listaClientes";
+import FormularioCadastroCliente from "./clientes/formularioCadastroCliente";
+import FormularioCadastroPet from "./pets/formularioPet";
+import ListaPet from "./pets/listaPet";
+import AlterarCliente from "./clientes/alterarClienes";
+import AlterarPet from "./pets/alterarPet";
 
 type Pet = {
     nomePet: string;
@@ -16,7 +18,7 @@ type Pet = {
 type State = {
     tela: string;
     pets: Pet[];
-    clientes: Array<{ nome: string; nomeSocial: string; cpf: string; dataEmissao: string }>; // Adicionando a tipagem dos clientes aqui
+    clientes: Array<{ nome: string; nomeSocial: string; cpf: string; dataEmissao: string }>;
 };
 
 export default class Roteador extends Component<{}, State> {
@@ -25,11 +27,13 @@ export default class Roteador extends Component<{}, State> {
         this.state = {
             tela: 'cadastroCliente',
             pets: [],
-            clientes: [] // Inicialize a lista de clientes vazia
+            clientes: []
         };
         this.selecionarView = this.selecionarView.bind(this);
         this.adicionarPet = this.adicionarPet.bind(this);
-        this.adicionarCliente = this.adicionarCliente.bind(this); // Adicione a função para adicionar cliente
+        this.adicionarCliente = this.adicionarCliente.bind(this);
+        this.alterarCliente = this.alterarCliente.bind(this);
+        this.alterarPet = this.alterarPet.bind(this);
     }
 
     selecionarView(novaTela: string, evento: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
@@ -51,13 +55,33 @@ export default class Roteador extends Component<{}, State> {
         }));
     }
 
+    alterarCliente(clienteAtualizado: { nome: string; nomeSocial: string; cpf: string; dataEmissao: string }) {
+        const { clientes } = this.state;
+        const indiceCliente = clientes.findIndex(cliente => cliente.cpf === clienteAtualizado.cpf);
+        if (indiceCliente !== -1) {
+            const clientesAtualizados = [...clientes];
+            clientesAtualizados[indiceCliente] = clienteAtualizado;
+            this.setState({ clientes: clientesAtualizados });
+        }
+    }
+
+    alterarPet(petAtualizado: Pet) {
+        const { pets } = this.state;
+        const indicePet = pets.findIndex(pet => pet.nomePet === petAtualizado.nomePet);
+        if (indicePet !== -1) {
+            const petsAtualizados = [...pets];
+            petsAtualizados[indicePet] = petAtualizado;
+            this.setState({ pets: petsAtualizados });
+        }
+    }
+
     render() {
         const { tela, pets, clientes } = this.state;
         const barraNavegacao = (
             <BarraNavegacao
-                seletorView ={this.selecionarView }
+                seletorView={this.selecionarView}
                 tema="#e3f2fd"
-                botoes={['cadastroCliente', 'listaCliente', 'cadastroPet', 'listaPet']}
+                botoes={['cadastroCliente', 'listaCliente', 'alterarCliente', 'cadastroPet', 'listaPet', 'alterarPet']} 
             />
         );
 
@@ -68,10 +92,14 @@ export default class Roteador extends Component<{}, State> {
                     <FormularioCadastroCliente tema="#e3f2fd" adicionarCliente={this.adicionarCliente} /> 
                 ) : tela === 'listaCliente' ? (
                     <ListaCliente clientes={clientes} /> 
+                ) : tela === 'alterarCliente' ? (
+                    <AlterarCliente tema="#e3f2fd" alterarCliente={this.alterarCliente} clientes={clientes} />
                 ) : tela === 'cadastroPet' ? (
                     <FormularioCadastroPet tema="#e3f2fd" adicionarPet={this.adicionarPet} clientes={clientes} />
                 ) : tela === 'listaPet' ? (
                     <ListaPet pets={pets} />
+                ) : tela === 'alterarPet' ? (
+                    <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} pets={pets} />
                 ) : null}
             </>
         );

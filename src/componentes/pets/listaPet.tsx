@@ -16,6 +16,16 @@ export default class ListaPet extends Component<Props> {
     render() {
         const { pets } = this.props;
 
+        if (pets.length === 0) {
+            return (
+                <div className="container-fluid">
+                    <div className="alert alert-info" role="alert">
+                        Nenhum pet cadastrado.
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div className="container-fluid">
                 <div className="list-group">
@@ -23,22 +33,26 @@ export default class ListaPet extends Component<Props> {
                         <div
                             key={index}
                             className="list-group-item list-group-item-action"
+                            style={{ marginBottom: "10px" }}
                         >
                             <div>
-                                <strong>Nome:</strong> {pet.nomePet}
+                                <p><strong>Nome:</strong> {pet.nomePet}</p>
                             </div>
                             <div>
-                                <strong>Raça:</strong> {pet.raca}
+                                <p><strong>Raça:</strong> {pet.raca}</p>
                             </div>
                             <div>
-                                <strong>Gênero:</strong> {pet.genero}
+                                <p><strong>Gênero:</strong> {pet.genero}</p>
                             </div>
                             <div>
-                                <strong>Tipo:</strong> {pet.tipo}
+                                <p><strong>Tipo:</strong> {pet.tipo}</p>
                             </div>
                             <div>
-                                <strong>cpfDono:</strong> {pet.donoCpf}
+                                <p><strong>CPF do Dono:</strong> {pet.donoCpf}</p>
                             </div>
+                            {index !== pets.length - 1 && (
+                                <hr style={{ borderColor: "blue" }} />
+                            )}
                         </div>
                     ))}
                 </div>

@@ -24,7 +24,9 @@ export default class ListaCliente extends Component<Props, State> {
         return (
             <div className="container-fluid">
                 {clientes.length === 0 ? (
-                    <p>Não tem nenhum cliente cadastrado</p>
+                   <div className="alert alert-info" role="alert">
+                   Nenhum cliente cadastrado.
+               </div>
                 ) : (
                     <div className="list-group">
                         {clientes.map((cliente, index) => (
