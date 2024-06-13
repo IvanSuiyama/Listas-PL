@@ -6,6 +6,8 @@ import FormularioCadastroPet from "./pets/formularioPet";
 import ListaPet from "./pets/listaPet";
 import AlterarCliente from "./clientes/alterarClienes";
 import AlterarPet from "./pets/alterarPet";
+import ExcluirPet from "./pets/excluirPet"; // Importe o componente ExcluirPet aqui
+import ExcluirCliente from "./clientes/excluirCliente";
 
 type Pet = {
     nomePet: string;
@@ -33,7 +35,10 @@ export default class Roteador extends Component<{}, State> {
         this.adicionarPet = this.adicionarPet.bind(this);
         this.adicionarCliente = this.adicionarCliente.bind(this);
         this.alterarCliente = this.alterarCliente.bind(this);
+        this.excluirCliente = this.excluirCliente.bind(this)
         this.alterarPet = this.alterarPet.bind(this);
+        this.excluirPet = this.excluirPet.bind(this); 
+        this.atualizarPets = this.atualizarPets.bind(this); 
     }
 
     selecionarView(novaTela: string, evento: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
@@ -41,6 +46,9 @@ export default class Roteador extends Component<{}, State> {
         this.setState({
             tela: novaTela
         });
+    }
+    atualizarPets(petsAtualizados: Pet[]) {
+        this.setState({ pets: petsAtualizados });
     }
 
     adicionarPet(novoPet: Pet) {
@@ -65,6 +73,12 @@ export default class Roteador extends Component<{}, State> {
         }
     }
 
+    excluirCliente = (cpf: string) => {
+        this.setState(prevState => ({
+            clientes: prevState.clientes.filter(cliente => cliente.cpf !== cpf)
+        }));
+    };
+
     alterarPet(petAtualizado: Pet) {
         const { pets } = this.state;
         const indicePet = pets.findIndex(pet => pet.nomePet === petAtualizado.nomePet);
@@ -75,13 +89,19 @@ export default class Roteador extends Component<{}, State> {
         }
     }
 
+    excluirPet(nomePet: string, cpf: string) {
+        this.setState(prevState => ({
+            pets: prevState.pets.filter(pet => pet.nomePet !== nomePet || pet.donoCpf !== cpf)
+        }));
+    }
+
     render() {
         const { tela, pets, clientes } = this.state;
         const barraNavegacao = (
             <BarraNavegacao
                 seletorView={this.selecionarView}
                 tema="#e3f2fd"
-                botoes={['cadastroCliente', 'listaCliente', 'alterarCliente', 'cadastroPet', 'listaPet', 'alterarPet']} 
+                botoes={['cadastroCliente', 'listaCliente', 'alterarCliente', 'excluirCliente', 'cadastroPet', 'listaPet', 'alterarPet', 'excluirPet']} 
             />
         );
 
@@ -94,12 +114,17 @@ export default class Roteador extends Component<{}, State> {
                     <ListaCliente clientes={clientes} /> 
                 ) : tela === 'alterarCliente' ? (
                     <AlterarCliente tema="#e3f2fd" alterarCliente={this.alterarCliente} clientes={clientes} />
-                ) : tela === 'cadastroPet' ? (
+                ) : tela === 'excluirCliente' ? (
+                    <ExcluirCliente tema="#e3f2fd" excluirCliente={this.excluirCliente} clientes={clientes} pets={pets} atualizarPets={this.atualizarPets} />
+                ) 
+                : tela === 'cadastroPet' ? (
                     <FormularioCadastroPet tema="#e3f2fd" adicionarPet={this.adicionarPet} clientes={clientes} />
                 ) : tela === 'listaPet' ? (
                     <ListaPet pets={pets} />
                 ) : tela === 'alterarPet' ? (
                     <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} pets={pets} />
+                ) : tela === 'excluirPet' ? (
+                    <ExcluirPet tema="#e3f2fd" excluirPet={this.excluirPet} clientes={clientes} pets={pets} />
                 ) : null}
             </>
         );
