@@ -1,12 +1,12 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import { Component } from "react";
+import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 
 type props = {
     tema: string,
-    botoes: string[],
-    seletorView: Function
+    botoes: Array<{ title: string, items?: string[] } | string>,
+    seletorView: Function,
+    esconderHome: boolean // Adiciona a prop esconderHome
 }
 
 export default class BarraNavegacao extends Component<props>{
@@ -15,22 +15,43 @@ export default class BarraNavegacao extends Component<props>{
         this.gerarListaBotoes = this.gerarListaBotoes.bind(this)
     }
 
-
     gerarListaBotoes() {
-        if (this.props.botoes.length <= 0) {
+        const { botoes, seletorView, esconderHome } = this.props;
+        if (botoes.length <= 0) {
             return <></>
         } else {
-            let lista = this.props.botoes.map(valor =>
-                <li key={valor} className="nav-item">
-                    <a className="nav-link" href="#" onClick={(e) => this.props.seletorView(valor, e)}>{valor}</a>
-                </li>
-            )
-            return lista
+            return botoes.map((valor, index) => {
+                if (typeof valor === "string") {
+                    if (valor === "home" && esconderHome) {
+                        return null;
+                    }
+                    return (
+                        <li key={index} className="nav-item">
+                            <a className="nav-link" href="#" onClick={(e) => seletorView(valor, e)}>{valor}</a>
+                        </li>
+                    );
+                } else {
+                    return (
+                        <li key={index} className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" id={`navbarDropdown${index}`} role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {valor.title}
+                            </a>
+                            <ul className="dropdown-menu" aria-labelledby={`navbarDropdown${index}`}>
+                                {valor.items?.map((item, itemIndex) => (
+                                    <li key={itemIndex}>
+                                        <a className="dropdown-item" href="#" onClick={(e) => seletorView(item, e)}>{item}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </li>
+                    );
+                }
+            });
         }
     }
 
     render() {
-        let tema = this.props.tema
+        let tema = this.props.tema;
         return (
             <>
                 <nav className="navbar navbar-expand-lg" data-bs-theme="light" style={{ backgroundColor: tema, marginBottom: 10 }}>

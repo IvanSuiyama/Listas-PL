@@ -6,8 +6,9 @@ import FormularioCadastroPet from "./pets/formularioPet";
 import ListaPet from "./pets/listaPet";
 import AlterarCliente from "./clientes/alterarClienes";
 import AlterarPet from "./pets/alterarPet";
-import ExcluirPet from "./pets/excluirPet"; // Importe o componente ExcluirPet aqui
+import ExcluirPet from "./pets/excluirPet"; 
 import ExcluirCliente from "./clientes/excluirCliente";
+import Home from "./home"; // Importe o componente Home
 
 type Pet = {
     nomePet: string;
@@ -27,7 +28,7 @@ export default class Roteador extends Component<{}, State> {
     constructor(props: {} | Readonly<{}>) {
         super(props);
         this.state = {
-            tela: 'cadastroCliente',
+            tela: 'home', // Altere o estado inicial para 'home'
             pets: [],
             clientes: []
         };
@@ -101,14 +102,21 @@ export default class Roteador extends Component<{}, State> {
             <BarraNavegacao
                 seletorView={this.selecionarView}
                 tema="#e3f2fd"
-                botoes={['cadastroCliente', 'listaCliente', 'alterarCliente', 'excluirCliente', 'cadastroPet', 'listaPet', 'alterarPet', 'excluirPet']} 
+                esconderHome={tela === 'home'}
+                botoes={[
+                    'home', // Adicione 'home' como a primeira opção do menu
+                    { title: 'Clientes', items: ['cadastroCliente', 'listaCliente', 'alterarCliente', 'excluirCliente'] },
+                    { title: 'Pets', items: ['cadastroPet', 'listaPet', 'alterarPet', 'excluirPet'] }
+                ]} 
             />
         );
 
         return (
             <>
                 {barraNavegacao}
-                {tela === 'cadastroCliente' ? (
+                {tela === 'home' ? (
+                    <Home />
+                ) : tela === 'cadastroCliente' ? (
                     <FormularioCadastroCliente tema="#e3f2fd" adicionarCliente={this.adicionarCliente} /> 
                 ) : tela === 'listaCliente' ? (
                     <ListaCliente clientes={clientes} /> 
