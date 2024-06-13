@@ -8,7 +8,17 @@ import AlterarCliente from "./clientes/alterarClienes";
 import AlterarPet from "./pets/alterarPet";
 import ExcluirPet from "./pets/excluirPet"; 
 import ExcluirCliente from "./clientes/excluirCliente";
-import Home from "./home"; // Importe o componente Home
+import Home from "./home"; 
+import FormularioCadastroProduto from "./produtos/cadastroProduto";
+import ListaProduto from "./produtos/listaProduto";
+import AlterarProduto from "./produtos/alteraProduto";
+import ExcluirProduto from "./produtos/excluirProduto";
+
+type Produto = {
+    nome: string;
+    descricao: string;
+    valor: number;
+}
 
 type Pet = {
     nomePet: string;
@@ -22,15 +32,17 @@ type State = {
     tela: string;
     pets: Pet[];
     clientes: Array<{ nome: string; nomeSocial: string; cpf: string; dataEmissao: string }>;
+    produtos: Array<{nome: string; descricao: string; valor: number;}>
 };
 
 export default class Roteador extends Component<{}, State> {
     constructor(props: {} | Readonly<{}>) {
         super(props);
         this.state = {
-            tela: 'home', // Altere o estado inicial para 'home'
+            tela: 'home', 
             pets: [],
-            clientes: []
+            clientes: [],
+            produtos: []
         };
         this.selecionarView = this.selecionarView.bind(this);
         this.adicionarPet = this.adicionarPet.bind(this);
@@ -39,7 +51,8 @@ export default class Roteador extends Component<{}, State> {
         this.excluirCliente = this.excluirCliente.bind(this)
         this.alterarPet = this.alterarPet.bind(this);
         this.excluirPet = this.excluirPet.bind(this); 
-        this.atualizarPets = this.atualizarPets.bind(this); 
+        this.atualizarPets = this.atualizarPets.bind(this);
+        this.adicionarProduto = this.adicionarProduto.bind(this) 
     }
 
     selecionarView(novaTela: string, evento: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
@@ -48,6 +61,7 @@ export default class Roteador extends Component<{}, State> {
             tela: novaTela
         });
     }
+    
     atualizarPets(petsAtualizados: Pet[]) {
         this.setState({ pets: petsAtualizados });
     }
@@ -95,6 +109,12 @@ export default class Roteador extends Component<{}, State> {
             pets: prevState.pets.filter(pet => pet.nomePet !== nomePet || pet.donoCpf !== cpf)
         }));
     }
+    
+    adicionarProduto(novoProduto: {nome: string; descricao: string; valor: number;}) {
+        this.setState(prevState => ({
+            produtos: [...prevState.produtos, novoProduto]
+        }));
+    }
 
     render() {
         const { tela, pets, clientes } = this.state;
@@ -106,7 +126,8 @@ export default class Roteador extends Component<{}, State> {
                 botoes={[
                     'home', // Adicione 'home' como a primeira opção do menu
                     { title: 'Clientes', items: ['cadastroCliente', 'listaCliente', 'alterarCliente', 'excluirCliente'] },
-                    { title: 'Pets', items: ['cadastroPet', 'listaPet', 'alterarPet', 'excluirPet'] }
+                    { title: 'Pets', items: ['cadastroPet', 'listaPet', 'alterarPet', 'excluirPet'] },
+                    { title: 'Produtos', items: ['cadastroProduto', 'listarProduto', 'alterarProduto', 'excluirProduto'] }
                 ]} 
             />
         );
@@ -124,8 +145,7 @@ export default class Roteador extends Component<{}, State> {
                     <AlterarCliente tema="#e3f2fd" alterarCliente={this.alterarCliente} clientes={clientes} />
                 ) : tela === 'excluirCliente' ? (
                     <ExcluirCliente tema="#e3f2fd" excluirCliente={this.excluirCliente} clientes={clientes} pets={pets} atualizarPets={this.atualizarPets} />
-                ) 
-                : tela === 'cadastroPet' ? (
+                ) : tela === 'cadastroPet' ? (
                     <FormularioCadastroPet tema="#e3f2fd" adicionarPet={this.adicionarPet} clientes={clientes} />
                 ) : tela === 'listaPet' ? (
                     <ListaPet pets={pets} />
@@ -133,6 +153,8 @@ export default class Roteador extends Component<{}, State> {
                     <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} pets={pets} />
                 ) : tela === 'excluirPet' ? (
                     <ExcluirPet tema="#e3f2fd" excluirPet={this.excluirPet} clientes={clientes} pets={pets} />
+                ) : tela === 'cadastroProduto' ? (
+                    <FormularioCadastroProduto tema="#e3f2fd" adicionarProduto={this.adicionarProduto} />
                 ) : null}
             </>
         );

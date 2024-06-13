@@ -71,3 +71,4 @@ export default class BarraNavegacao extends Component<props>{
         )
     }
 }
+
