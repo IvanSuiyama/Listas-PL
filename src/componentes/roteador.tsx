@@ -13,10 +13,10 @@ import FormularioCadastroProduto from "./produtos/cadastroProduto";
 import ListaProduto from "./produtos/listaProduto";
 import AlterarProduto from "./produtos/alteraProduto";
 import ExcluirProduto from "./produtos/excluirProduto";
-import FormularioCadastroServico from "./servico/formularioCadastroServico";
-import ListarServico from "./servico/listarServico";
-import AlterarServico from "./servico/alterarServico";
-import ExcluirServico from "./servico/excluirServico";
+import FormularioCadastroServico from "./servicos/formularioCadastroServico";
+import ListarServico from "./servicos/listarServico";
+import AlterarServico from "./servicos/alterarServico";
+import ExcluirServico from "./servicos/excluirServico";
 
 
 
@@ -192,7 +192,8 @@ export default class Roteador extends Component<{}, State> {
                     { title: "Clientes", items: ["cadastroCliente", "listaCliente", "alterarCliente", "excluirCliente"] },
                     { title: "Pets", items: ["cadastroPet", "listaPet", "alterarPet", "excluirPet"] },
                     { title: "Produtos", items: ["cadastroProduto", "listarProduto", "alterarProduto", "excluirProduto"] },
-                    { title: "Serviços", items: ["cadastroServico", "listarServico", "alterarServico", "excluirServico"] },
+                    { title: "Serviços", items: ["cadastroServico", "listarServico", "alterarServico", "excluirServico"] }
+                    
                 ]}
             />
         );
