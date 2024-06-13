@@ -32,7 +32,7 @@ type State = {
     tela: string;
     pets: Pet[];
     clientes: Array<{ nome: string; nomeSocial: string; cpf: string; dataEmissao: string }>;
-    produtos: Array<{nome: string; descricao: string; valor: number;}>
+    produtos: Produto[];
 };
 
 export default class Roteador extends Component<{}, State> {
@@ -53,6 +53,8 @@ export default class Roteador extends Component<{}, State> {
         this.excluirPet = this.excluirPet.bind(this); 
         this.atualizarPets = this.atualizarPets.bind(this);
         this.adicionarProduto = this.adicionarProduto.bind(this) 
+        this.alterarProduto = this.alterarProduto.bind(this);
+        this.excluirProduto = this.excluirProduto.bind(this);
     }
 
     selecionarView(novaTela: string, evento: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
@@ -110,14 +112,30 @@ export default class Roteador extends Component<{}, State> {
         }));
     }
     
-    adicionarProduto(novoProduto: {nome: string; descricao: string; valor: number;}) {
+    adicionarProduto(novoProduto: Produto) {
         this.setState(prevState => ({
             produtos: [...prevState.produtos, novoProduto]
         }));
     }
 
+    alterarProduto(produtoAtualizado: Produto) {
+        const { produtos } = this.state;
+        const indiceProduto = produtos.findIndex(p => p.nome === produtoAtualizado.nome);
+        if (indiceProduto !== -1) {
+            const produtosAtualizados = [...produtos];
+            produtosAtualizados[indiceProduto] = produtoAtualizado;
+            this.setState({ produtos: produtosAtualizados });
+        }
+    }
+
+    excluirProduto(nomeProduto: string) {
+        this.setState(prevState => ({
+            produtos: prevState.produtos.filter(produto => produto.nome !== nomeProduto)
+        }));
+    }
+
     render() {
-        const { tela, pets, clientes } = this.state;
+        const { tela, pets, clientes, produtos } = this.state;
         const barraNavegacao = (
             <BarraNavegacao
                 seletorView={this.selecionarView}
@@ -127,7 +145,8 @@ export default class Roteador extends Component<{}, State> {
                     'home', // Adicione 'home' como a primeira opção do menu
                     { title: 'Clientes', items: ['cadastroCliente', 'listaCliente', 'alterarCliente', 'excluirCliente'] },
                     { title: 'Pets', items: ['cadastroPet', 'listaPet', 'alterarPet', 'excluirPet'] },
-                    { title: 'Produtos', items: ['cadastroProduto', 'listarProduto', 'alterarProduto', 'excluirProduto'] }
+                    { title: 'Produtos', items: ['cadastroProduto', 'listarProduto', 'alterarProduto', 'excluirProduto'] },
+                    {title: 'Serviços', items: ['CadastroServiço', 'listarServiço', 'alterarServiço', 'excluirServiço' ]}
                 ]} 
             />
         );
@@ -155,6 +174,12 @@ export default class Roteador extends Component<{}, State> {
                     <ExcluirPet tema="#e3f2fd" excluirPet={this.excluirPet} clientes={clientes} pets={pets} />
                 ) : tela === 'cadastroProduto' ? (
                     <FormularioCadastroProduto tema="#e3f2fd" adicionarProduto={this.adicionarProduto} />
+                ) : tela === 'listarProduto' ? (
+                    <ListaProduto produtos={produtos} />
+                ) : tela === 'alterarProduto' ? (
+                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto} produtos={produtos} />
+                ) : tela === 'excluirProduto' ? (
+                    <ExcluirProduto tema="#e3f2fd" excluirProduto={this.excluirProduto} produtos={produtos} />
                 ) : null}
             </>
         );
