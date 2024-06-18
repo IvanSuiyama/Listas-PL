@@ -13,11 +13,11 @@ import FormularioCadastroProduto from "./produto/cadastroProduto";
 import ListaProduto from "./produto/listaProduto";
 import AlterarProduto from "./produto/alterarProduto";
 import ExcluirProduto from "./produto/excluirProduto";
-/* import FormularioCadastroServico from "./servicos/formularioCadastroServico";
-import ListarServico from "./servicos/listarServico";
-import AlterarServico from "./servicos/alterarServico";
-import ExcluirServico from "./servicos/excluirServico";
-import CompraPS from "./compras/compra";
+import FormularioCadastroServico from "./servico/cadastroServico";
+import ListarServico from "./servico/listaServico";
+import AlterarServico from "./alteraServico";
+import ExcluirServico from "./servico/excluiServico";
+/*import CompraPS from "./compras/compra";
 import ListaCompras from "./compras/mostraCompra"; */
 
 export default function Roteador() {
@@ -25,8 +25,8 @@ export default function Roteador() {
   const [pets, setPets] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
-  /* const [servicos, setServicos] = useState([]);
-  const [compras, setCompras] = useState([]);  */
+  const [servicos, setServicos] = useState([]);
+  /*const [compras, setCompras] = useState([]);  */
 
   const selecionarView = (novaTela, evento) => {
     evento.preventDefault();
@@ -82,11 +82,11 @@ export default function Roteador() {
     setProdutos((prevProdutos) => prevProdutos.filter((produto) => produto.nome !== nomeProduto));
   };
 
-  /* const adicionarServico = (novoServico) => {
+  const adicionarServico = (novoServico) => {
     setServicos((prevServicos) => [...prevServicos, novoServico]);
   };
 
-  const alterarServico = (servicoAtualizado) => {
+   const alterarServico = (servicoAtualizado) => {
     setServicos((prevServicos) =>
       prevServicos.map((servico) =>
         servico.nome === servicoAtualizado.nome ? servicoAtualizado : servico
@@ -98,7 +98,7 @@ export default function Roteador() {
     setServicos((prevServicos) => prevServicos.filter((servico) => servico.nome !== nomeServico));
   };
 
-  const registrarCompra = (compra) => {
+ /* const registrarCompra = (compra) => {
     const novaCompra = {
       clienteCpf: compra.cpf,
       clienteNome: compra.nomeCliente,
@@ -143,15 +143,15 @@ export default function Roteador() {
         return <AlterarProduto tema="#e3f2fd" alterarProduto={alterarProduto} produtos={produtos} />;
       case "excluirProduto":
         return <ExcluirProduto tema="#e3f2fd" excluirProduto={excluirProduto} produtos={produtos} />;
-     /* case "cadastroServico":
+      case "cadastroServico":
         return <FormularioCadastroServico tema="#e3f2fd" adicionarServico={adicionarServico} />;
       case "listarServico":
         return <ListarServico servicos={servicos} />;
-      case "alterarServico":
+     case "alterarServico":
         return <AlterarServico tema="#e3f2fd" alterarServico={alterarServico} servicos={servicos} />;
       case "excluirServico":
         return <ExcluirServico tema="#e3f2fd" excluirServico={excluirServico} servicos={servicos} />;
-      case "compra":
+     /* case "compra":
         return <CompraPS clientes={clientes} produtos={produtos} servicos={servicos} registrarCompra={registrarCompra} />;
       case "mostraCompra":
         return <ListaCompras compras={compras} />; */
