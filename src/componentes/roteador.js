@@ -17,8 +17,8 @@ import FormularioCadastroServico from "./servico/cadastroServico";
 import ListarServico from "./servico/listaServico";
 import AlterarServico from "./alteraServico";
 import ExcluirServico from "./servico/excluiServico";
-/*import CompraPS from "./compras/compra";
-import ListaCompras from "./compras/mostraCompra"; */
+import CompraPS from "./compras/compras";
+import ListaCompras from "./compras/mostraCompra"; 
 
 export default function Roteador() {
   const [tela, setTela] = useState("home");
@@ -26,7 +26,7 @@ export default function Roteador() {
   const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
   const [servicos, setServicos] = useState([]);
-  /*const [compras, setCompras] = useState([]);  */
+  const [compras, setCompras] = useState([]);  
 
   const selecionarView = (novaTela, evento) => {
     evento.preventDefault();
@@ -98,14 +98,14 @@ export default function Roteador() {
     setServicos((prevServicos) => prevServicos.filter((servico) => servico.nome !== nomeServico));
   };
 
- /* const registrarCompra = (compra) => {
+  const registrarCompra = (compra) => {
     const novaCompra = {
       clienteCpf: compra.cpf,
       clienteNome: compra.nomeCliente,
       itens: compra.itens,
     };
     setCompras((prevCompras) => [...prevCompras, novaCompra]);
-  }; */
+  }; 
 
   const renderView = () => {
     switch (tela) {
@@ -151,10 +151,10 @@ export default function Roteador() {
         return <AlterarServico tema="#e3f2fd" alterarServico={alterarServico} servicos={servicos} />;
       case "excluirServico":
         return <ExcluirServico tema="#e3f2fd" excluirServico={excluirServico} servicos={servicos} />;
-     /* case "compra":
+      case "compra":
         return <CompraPS clientes={clientes} produtos={produtos} servicos={servicos} registrarCompra={registrarCompra} />;
-      case "mostraCompra":
-        return <ListaCompras compras={compras} />; */
+       case "mostraCompra":
+        return <ListaCompras compras={compras} />; 
       default:
         return null;
     }
