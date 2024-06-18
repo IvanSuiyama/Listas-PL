@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import BarraNavegacao from "./barraNavegacao";
-import ListaCliente from "./cliente/listaCliente"
-import FormularioCadastroCliente from "./cliente/formularioCadastroCliente"
+import ListaCliente from "./cliente/listaCliente";
+import FormularioCadastroCliente from "./cliente/formularioCadastroCliente";
 import FormularioCadastroPet from "./pet/formCadastroPet";
 import ListaPet from "./pet/listapet";
 import AlterarCliente from "./cliente/alteraCliente";
@@ -9,11 +9,11 @@ import AlterarPet from "./pet/alterarPet";
 import ExcluirPet from "./pet/excluirPet";
 import ExcluirCliente from "./cliente/excluiCliente";
 import Home from "./home";
-/* import FormularioCadastroProduto from "./produtos/cadastroProduto";
-import ListaProduto from "./produtos/listaProduto";
-import AlterarProduto from "./produtos/alteraProduto";
-import ExcluirProduto from "./produtos/excluirProduto";
-import FormularioCadastroServico from "./servicos/formularioCadastroServico";
+import FormularioCadastroProduto from "./produto/cadastroProduto";
+import ListaProduto from "./produto/listaProduto";
+import AlterarProduto from "./produto/alterarProduto";
+import ExcluirProduto from "./produto/excluirProduto";
+/* import FormularioCadastroServico from "./servicos/formularioCadastroServico";
 import ListarServico from "./servicos/listarServico";
 import AlterarServico from "./servicos/alterarServico";
 import ExcluirServico from "./servicos/excluirServico";
@@ -24,9 +24,9 @@ export default function Roteador() {
   const [tela, setTela] = useState("home");
   const [pets, setPets] = useState([]);
   const [clientes, setClientes] = useState([]);
-  /* const [produtos, setProdutos] = useState([]);
-  const [servicos, setServicos] = useState([]);
-  const [compras, setCompras] = useState([]); */
+  const [produtos, setProdutos] = useState([]);
+  /* const [servicos, setServicos] = useState([]);
+  const [compras, setCompras] = useState([]);  */
 
   const selecionarView = (novaTela, evento) => {
     evento.preventDefault();
@@ -49,27 +49,28 @@ export default function Roteador() {
     );
   };
 
-   const excluirCliente = (cpf) => {
+  const excluirCliente = (cpf) => {
     setClientes((prevClientes) => prevClientes.filter((cliente) => cliente.cpf !== cpf));
   };
- 
+
   const alterarPet = (petAtualizado) => {
     setPets((prevPets) =>
       prevPets.map((pet) =>
         pet.nomePet === petAtualizado.nomePet ? petAtualizado : pet
       )
     );
-  }; 
+  };
 
-   const excluirPet = (nomePet, cpf) => {
+  const excluirPet = (nomePet, cpf) => {
     setPets((prevPets) => prevPets.filter((pet) => pet.nomePet !== nomePet || pet.donoCpf !== cpf));
   };
 
-  /* const adicionarProduto = (novoProduto) => {
+  const adicionarProduto = (novoProduto) => {
     setProdutos((prevProdutos) => [...prevProdutos, novoProduto]);
   };
 
   const alterarProduto = (produtoAtualizado) => {
+    console.log("Alterando produto:", produtoAtualizado);
     setProdutos((prevProdutos) =>
       prevProdutos.map((produto) =>
         produto.nome === produtoAtualizado.nome ? produtoAtualizado : produto
@@ -77,11 +78,11 @@ export default function Roteador() {
     );
   };
 
-  const excluirProduto = (nomeProduto) => {
+   const excluirProduto = (nomeProduto) => {
     setProdutos((prevProdutos) => prevProdutos.filter((produto) => produto.nome !== nomeProduto));
   };
 
-  const adicionarServico = (novoServico) => {
+  /* const adicionarServico = (novoServico) => {
     setServicos((prevServicos) => [...prevServicos, novoServico]);
   };
 
@@ -114,7 +115,7 @@ export default function Roteador() {
         return <FormularioCadastroCliente tema="#e3f2fd" adicionarCliente={adicionarCliente} />;
       case "listaCliente":
         return <ListaCliente clientes={clientes} />;
-       case "alterarCliente":
+      case "alterarCliente":
         return <AlterarCliente tema="#e3f2fd" alterarCliente={alterarCliente} clientes={clientes} />;
       case "excluirCliente":
         return (
@@ -125,16 +126,16 @@ export default function Roteador() {
             pets={pets}
             atualizarPets={setPets}
           />
-        ); 
+        );
       case "cadastroPet":
         return <FormularioCadastroPet tema="#e3f2fd" adicionarPet={adicionarPet} clientes={clientes} />;
-       case "listaPet":
+      case "listaPet":
         return <ListaPet pets={pets} />;
       case "alterarPet":
         return <AlterarPet tema="#e3f2fd" alterarPet={alterarPet} clientes={clientes} pets={pets} />;
       case "excluirPet":
         return <ExcluirPet tema="#e3f2fd" excluirPet={excluirPet} clientes={clientes} pets={pets} />;
-      /* case "cadastroProduto":
+      case "cadastroProduto":
         return <FormularioCadastroProduto tema="#e3f2fd" adicionarProduto={adicionarProduto} />;
       case "listarProduto":
         return <ListaProduto produtos={produtos} />;
@@ -142,7 +143,7 @@ export default function Roteador() {
         return <AlterarProduto tema="#e3f2fd" alterarProduto={alterarProduto} produtos={produtos} />;
       case "excluirProduto":
         return <ExcluirProduto tema="#e3f2fd" excluirProduto={excluirProduto} produtos={produtos} />;
-      case "cadastroServico":
+     /* case "cadastroServico":
         return <FormularioCadastroServico tema="#e3f2fd" adicionarServico={adicionarServico} />;
       case "listarServico":
         return <ListarServico servicos={servicos} />;
@@ -153,7 +154,7 @@ export default function Roteador() {
       case "compra":
         return <CompraPS clientes={clientes} produtos={produtos} servicos={servicos} registrarCompra={registrarCompra} />;
       case "mostraCompra":
-        return <ListaCompras compras={compras} />; */  
+        return <ListaCompras compras={compras} />; */
       default:
         return null;
     }
