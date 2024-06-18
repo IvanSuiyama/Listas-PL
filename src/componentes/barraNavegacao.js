@@ -1,22 +1,46 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
+import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 
 export default function BarraNavegacao(props) {
     const gerarListaBotoes = () => {
-        if (props.botoes.length <= 0) {
-            return <></>
-        } else {
-            let lista = props.botoes.map(valor =>
-                <li key={valor} className="nav-item">
-                    <a className="nav-link" href="#" onClick={(e) => props.seletorView(valor, e)}>{valor}</a>
-                </li>
-            )
-            return lista
-        }
-    }
+        const { botoes, seletorView, esconderHome } = props;
 
-    let tema = props.tema
+        if (botoes.length <= 0) {
+            return <></>;
+        } else {
+            return botoes.map((valor, index) => {
+                if (typeof valor === "string") {
+                    if (valor === "home" && esconderHome) {
+                        return null;
+                    }
+                    return (
+                        <li key={index} className="nav-item">
+                            <a className="nav-link" href="#" onClick={(e) => seletorView(valor, e)}>{valor}</a>
+                        </li>
+                    );
+                } else {
+                    return (
+                        <li key={index} className="nav-item dropdown">
+                            <a className="nav-link dropdown-toggle" href="#" id={`navbarDropdown${index}`} role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {valor.title}
+                            </a>
+                            <ul className="dropdown-menu" aria-labelledby={`navbarDropdown${index}`}>
+                                {valor.items?.map((item, itemIndex) => (
+                                    <li key={itemIndex}>
+                                        <a className="dropdown-item" href="#" onClick={(e) => seletorView(item, e)}>{item}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </li>
+                    );
+                }
+            });
+        }
+    };
+
+    const tema = props.tema;
+
     return (
         <>
             <nav className="navbar navbar-expand-lg" data-bs-theme="light" style={{ backgroundColor: tema, marginBottom: 10 }}>
@@ -33,5 +57,5 @@ export default function BarraNavegacao(props) {
                 </div>
             </nav>
         </>
-    )
+    );
 }
