@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import BarraNavegacao from "./barraNavegacao";
 import ListaCliente from "./cliente/listaCliente"
 import FormularioCadastroCliente from "./cliente/formularioCadastroCliente"
-/* import FormularioCadastroPet from "./pets/formularioPet"; */
-/* import ListaPet from "./pets/listaPet"; */
+import FormularioCadastroPet from "./pet/formCadastroPet";
+import ListaPet from "./pet/listapet";
 import AlterarCliente from "./cliente/alteraCliente";
-/* import AlterarPet from "./pets/alterarPet";
-import ExcluirPet from "./pets/excluirPet";
-import ExcluirCliente from "./clientes/excluirCliente"; */
+import AlterarPet from "./pet/alterarPet";
+import ExcluirPet from "./pet/excluirPet";
+/* import ExcluirCliente from "./clientes/excluirCliente";  */ 
 import Home from "./home";
 /* import FormularioCadastroProduto from "./produtos/cadastroProduto";
 import ListaProduto from "./produtos/listaProduto";
@@ -22,7 +22,7 @@ import ListaCompras from "./compras/mostraCompra"; */
 
 export default function Roteador() {
   const [tela, setTela] = useState("home");
-  /* const [pets, setPets] = useState([]); */
+  const [pets, setPets] = useState([]);
   const [clientes, setClientes] = useState([]);
   /* const [produtos, setProdutos] = useState([]);
   const [servicos, setServicos] = useState([]);
@@ -33,9 +33,9 @@ export default function Roteador() {
     setTela(novaTela);
   };
 
-  /* const adicionarPet = (novoPet) => {
+  const adicionarPet = (novoPet) => {
     setPets((prevPets) => [...prevPets, novoPet]);
-  }; */
+  };
 
   const adicionarCliente = (novoCliente) => {
     setClientes((prevClientes) => [...prevClientes, novoCliente]);
@@ -49,23 +49,23 @@ export default function Roteador() {
     );
   };
 
- /*  const excluirCliente = (cpf) => {
+/*    const excluirCliente = (cpf) => {
     setClientes((prevClientes) => prevClientes.filter((cliente) => cliente.cpf !== cpf));
   };
-
+ */
   const alterarPet = (petAtualizado) => {
     setPets((prevPets) =>
       prevPets.map((pet) =>
         pet.nomePet === petAtualizado.nomePet ? petAtualizado : pet
       )
     );
-  }; */
+  }; 
 
-  /* const excluirPet = (nomePet, cpf) => {
+   const excluirPet = (nomePet, cpf) => {
     setPets((prevPets) => prevPets.filter((pet) => pet.nomePet !== nomePet || pet.donoCpf !== cpf));
   };
 
-  const adicionarProduto = (novoProduto) => {
+  /* const adicionarProduto = (novoProduto) => {
     setProdutos((prevProdutos) => [...prevProdutos, novoProduto]);
   };
 
@@ -125,16 +125,16 @@ export default function Roteador() {
             pets={pets}
             atualizarPets={setPets}
           />
-        );
+        ); */
       case "cadastroPet":
         return <FormularioCadastroPet tema="#e3f2fd" adicionarPet={adicionarPet} clientes={clientes} />;
-      case "listaPet":
+       case "listaPet":
         return <ListaPet pets={pets} />;
       case "alterarPet":
         return <AlterarPet tema="#e3f2fd" alterarPet={alterarPet} clientes={clientes} pets={pets} />;
       case "excluirPet":
         return <ExcluirPet tema="#e3f2fd" excluirPet={excluirPet} clientes={clientes} pets={pets} />;
-      case "cadastroProduto":
+      /* case "cadastroProduto":
         return <FormularioCadastroProduto tema="#e3f2fd" adicionarProduto={adicionarProduto} />;
       case "listarProduto":
         return <ListaProduto produtos={produtos} />;
@@ -153,7 +153,7 @@ export default function Roteador() {
       case "compra":
         return <CompraPS clientes={clientes} produtos={produtos} servicos={servicos} registrarCompra={registrarCompra} />;
       case "mostraCompra":
-        return <ListaCompras compras={compras} />;  */
+        return <ListaCompras compras={compras} />; */  
       default:
         return null;
     }
