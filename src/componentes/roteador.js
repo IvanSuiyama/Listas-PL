@@ -7,7 +7,7 @@ import ListaPet from "./pet/listapet";
 import AlterarCliente from "./cliente/alteraCliente";
 import AlterarPet from "./pet/alterarPet";
 import ExcluirPet from "./pet/excluirPet";
-/* import ExcluirCliente from "./clientes/excluirCliente";  */ 
+import ExcluirCliente from "./cliente/excluiCliente";
 import Home from "./home";
 /* import FormularioCadastroProduto from "./produtos/cadastroProduto";
 import ListaProduto from "./produtos/listaProduto";
@@ -49,10 +49,10 @@ export default function Roteador() {
     );
   };
 
-/*    const excluirCliente = (cpf) => {
+   const excluirCliente = (cpf) => {
     setClientes((prevClientes) => prevClientes.filter((cliente) => cliente.cpf !== cpf));
   };
- */
+ 
   const alterarPet = (petAtualizado) => {
     setPets((prevPets) =>
       prevPets.map((pet) =>
@@ -116,7 +116,7 @@ export default function Roteador() {
         return <ListaCliente clientes={clientes} />;
        case "alterarCliente":
         return <AlterarCliente tema="#e3f2fd" alterarCliente={alterarCliente} clientes={clientes} />;
-      /* case "excluirCliente":
+      case "excluirCliente":
         return (
           <ExcluirCliente
             tema="#e3f2fd"
@@ -125,7 +125,7 @@ export default function Roteador() {
             pets={pets}
             atualizarPets={setPets}
           />
-        ); */
+        ); 
       case "cadastroPet":
         return <FormularioCadastroPet tema="#e3f2fd" adicionarPet={adicionarPet} clientes={clientes} />;
        case "listaPet":
