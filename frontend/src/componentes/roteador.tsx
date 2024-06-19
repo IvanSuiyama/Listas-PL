@@ -233,7 +233,8 @@ export default class Roteador extends Component<{}, State> {
                     { title: "Pets", items: ["cadastroPet", "listaPet", "alterarPet", "excluirPet"] },
                     { title: "Produtos", items: ["cadastroProduto", "listarProduto", "alterarProduto", "excluirProduto"] },
                     { title: "Serviços", items: ["cadastroServico", "listarServico", "alterarServico", "excluirServico"] },
-                    { title: "Compras Serviços", items: ["compra", "mostraCompra"] }
+                    { title: "Compras Serviços", items: ["compra", "mostraCompra"] },
+                    {title: "Registros", items: ["Top10 Quantidade", "Servicos/Produtos mais consumidos", "S/P por tipo raça pet", "Top5 valor"]}
                 ]}
             />
         );
@@ -259,7 +260,7 @@ export default class Roteador extends Component<{}, State> {
                     />
                 ) : tela === "cadastroPet" ? (
                     <FormularioCadastroPet tema="#e3f2fd" adicionarPet={this.adicionarPet} clientes={clientes} />
-                ) : tela === "listaPet" ? (
+                ) : tela === "api/listaPet" ? (
                     <ListaPet pets={pets} />
                 ) : tela === "alterarPet" ? (
                     <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} pets={pets} />

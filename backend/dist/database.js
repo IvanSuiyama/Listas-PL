@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createDatabaseAndTables = void 0;
 var mysql_1 = __importDefault(require("mysql"));
 // Configurações de conexão com o banco de dados MySQL
 var connection = mysql_1.default.createConnection({
@@ -37,7 +38,7 @@ function createDatabaseAndTables() {
                 }
                 console.log('Conectado à database PetLovers.');
                 // Query para criar a tabela cliente
-                var createClienteTableQuery = "\n            CREATE TABLE IF NOT EXISTS cliente (\n              nome VARCHAR(255) PRIMARY KEY,\n              nomeSocial VARCHAR(255),\n              cpf VARCHAR(14) UNIQUE,\n              dt_emissao DATE\n            )\n          ";
+                var createClienteTableQuery = "\n            CREATE TABLE IF NOT EXISTS cliente (\n              nome VARCHAR(255),\n              nomeSocial VARCHAR(255),\n              cpf VARCHAR(14) PRIMARY KEY,\n              dt_emissao VARCHAR(20)\n            )\n          ";
                 // Query para criar o índice na coluna 'nome' da tabela cliente
                 var createClienteIndexQuery = "\n            CREATE INDEX idx_nome ON cliente(nome)\n          ";
                 // Query para criar a tabela pet
@@ -130,5 +131,4 @@ function createDatabaseAndTables() {
         });
     });
 }
-// Chamar a função para criar a database e as tabelas ao executar o arquivo database.ts
-createDatabaseAndTables();
+exports.createDatabaseAndTables = createDatabaseAndTables;

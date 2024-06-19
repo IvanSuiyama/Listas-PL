@@ -48,26 +48,51 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
         } as Pick<State, keyof State>));
     };
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const { nome, nomeSocial, cpf, dataEmissao } = this.state;
+    handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const { nome, nomeSocial, cpf, dataEmissao } = this.state;
     
-    if (!this.isValidCpf(cpf)) {
-        alert("CPF inválido!");
-        return; // Evita continuar o processo de cadastro se o CPF for inválido
-    }
-
-    alert("Cliente cadastrado com sucesso!");
-    const novoCliente = { nome, nomeSocial, cpf, dataEmissao };
-    this.props.adicionarCliente(novoCliente); // Chamando a função adicionarCliente passada por props
-    this.setState({
-        nome: "",
-        nomeSocial: "",
-        cpf: "",
-        dataEmissao: ""
-    });
-};
-
+        if (!this.isValidCpf(cpf)) {
+            alert("CPF inválido!");
+            return; // Evita continuar o processo de cadastro se o CPF for inválido
+        }
+    
+        const novoCliente = { nome, nomeSocial, cpf, dataEmissao };
+    
+        try {
+            const response = await fetch('http://localhost:5000/cadastroCliente', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(novoCliente),
+            });
+    
+            if (response.ok) {
+                alert("Cliente cadastrado com sucesso!");
+                this.props.adicionarCliente(novoCliente); // Chamando a função adicionarCliente passada por props
+                this.setState({
+                    nome: "",
+                    nomeSocial: "",
+                    cpf: "",
+                    dataEmissao: ""
+                });
+            } else {
+                const errorData = await response.json();
+                if (errorData.error === "CPF já cadastrado") {
+                    alert("CPF já cadastrado");
+                    return; // Stop further processing if CPF is already registered
+                }
+                alert(errorData.error || "Erro ao cadastrar cliente");
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                alert("Erro ao cadastrar cliente: " + error.message);
+            } else {
+                alert("Erro desconhecido ao cadastrar cliente");
+            }
+        }
+    };
     render() {
         const { tema } = this.props;
         const { nome, nomeSocial, cpf, dataEmissao } = this.state;

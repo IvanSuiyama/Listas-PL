@@ -9,7 +9,7 @@ const connection = mysql.createConnection({
 
 // Função para criar a database PetLovers e as tabelas
 // Função para criar a database PetLovers e as tabelas
-function createDatabaseAndTables() {
+export function createDatabaseAndTables() {
     // Conectar ao MySQL
     connection.connect((err) => {
       if (err) {
@@ -39,13 +39,13 @@ function createDatabaseAndTables() {
           // Query para criar a tabela cliente
           const createClienteTableQuery = `
             CREATE TABLE IF NOT EXISTS cliente (
-              nome VARCHAR(255) PRIMARY KEY,
+              nome VARCHAR(255),
               nomeSocial VARCHAR(255),
-              cpf VARCHAR(14) UNIQUE,
-              dt_emissao DATE
+              cpf VARCHAR(14) PRIMARY KEY,
+              dt_emissao VARCHAR(20)
             )
           `;
-  
+          
           // Query para criar o índice na coluna 'nome' da tabela cliente
           const createClienteIndexQuery = `
             CREATE INDEX idx_nome ON cliente(nome)
@@ -213,5 +213,4 @@ function createDatabaseAndTables() {
   });
 }
 
-// Chamar a função para criar a database e as tabelas ao executar o arquivo database.ts
-createDatabaseAndTables();
+
