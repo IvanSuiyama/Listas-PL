@@ -3,18 +3,13 @@ import cors from "cors";
 import mysql, { Connection } from 'mysql'; // Importe também o 'Connection' do MySQL
 import { createDatabaseAndTables } from "./database";
 import { Cliente } from "./cliente/cliente";
-
+import { Pet } from "./pet/pet";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const dbName = "PetLovers"
 app.use(express.json());
 
-// Configurações de CORS
-const corOptions = {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT"],
-    optionsSuccessStatus: 200,
-};
+
 app.use(cors());
 
 // Configuração da conexão MySQL
@@ -42,6 +37,8 @@ connection.connect((err) => {
 
 // Instanciar o serviço de Cliente após a conexão estar estabelecida
 const clienteService = new Cliente(connection);
+
+const petservices = new Pet(connection)
 
 // Rotas da API
 app.get('/listarClientes', async (req, res) => {
@@ -80,4 +77,67 @@ app.post("/cadastroCliente", async (req, res) => {
         res.status(500).send("Erro ao cadastrar Cliente");
     }
 });
+
+app.put("/alterarCliente", async (req: Request, res: Response) =>{
+    const {nome, nomeSocial, cpf, novoCpf, dataEmissao} = req.body
+
+    try {
+        const clienteexist = await clienteService.buscarUsuarioPorCpf(dbName, cpf)
+
+        if (!clienteexist) {
+            res.status(404).send("Cliente não encontrado")
+        }
+
+        await clienteService.alterarCliente(dbName, nome, nomeSocial, novoCpf, dataEmissao, cpf)
+        console.log("Cliente alterado com sucesso")
+        res.status(200).send("Cliente alterado com sucesso")
+    } catch (error) {
+        console.error("Erro ao alterar cliente")
+        res.status(500).send("Erro ao alterar cliente")
+    }
+
+
+} )
+
+app.get("/listaPet", async (req, res) => {
+    try {
+        const clientes = await petservices.buscarPet("PetLovers");
+        console.log(clientes)
+        res.json(clientes);
+    } catch (error) {
+        console.error('Erro ao obter pets:', error);
+        res.status(500).json({ error: 'Erro interno ao obter pets' });
+    }
+});
+
+app.post("/cadastrarPet", async (req, res) =>{ 
+    const {nomePet, raca, genero, tipo, cpf} = req.body
+
+    try{
+        const clienteexist = await clienteService.verificaCPF(cpf);
+
+        if (!clienteexist) {
+            console.log("cliente não cadastrado")
+            res.status(404).send("Cliente não cadastrado")
+        }
+
+        const verificaCadastroPet = await petservices.cadastrarPet(dbName, nomePet, raca, genero, tipo, cpf)
+        if (verificaCadastroPet) {
+            console.log("pet cadastrado com sucesso")
+            res.status(200).send("Pet cadastrado com sucesso")
+        }
+        else {
+            console.error("Erro ao cadastrar pet")
+            res.status(500).send("Erro ao cadastrar pet")
+
+        }
+
+
+    } catch (error) {
+        console.error("Erro ao cadastrar pet", error)
+        res.status(500).send("Erro ao cadastrar pet")
+    }
+
+})
+
 

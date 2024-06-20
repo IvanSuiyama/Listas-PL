@@ -44,16 +44,11 @@ var cors_1 = __importDefault(require("cors"));
 var mysql_1 = __importDefault(require("mysql")); // Importe também o 'Connection' do MySQL
 var database_1 = require("./database");
 var cliente_1 = require("./cliente/cliente");
+var pet_1 = require("./pet/pet");
 var app = (0, express_1.default)();
 var PORT = process.env.PORT || 5000;
 var dbName = "PetLovers";
 app.use(express_1.default.json());
-// Configurações de CORS
-var corOptions = {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT"],
-    optionsSuccessStatus: 200,
-};
 app.use((0, cors_1.default)());
 // Configuração da conexão MySQL
 var connection = mysql_1.default.createConnection({
@@ -76,6 +71,7 @@ connection.connect(function (err) {
 });
 // Instanciar o serviço de Cliente após a conexão estar estabelecida
 var clienteService = new cliente_1.Cliente(connection);
+var petservices = new pet_1.Pet(connection);
 // Rotas da API
 app.get('/listarClientes', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var clientes, error_1;
@@ -130,6 +126,94 @@ app.post("/cadastroCliente", function (req, res) { return __awaiter(void 0, void
                 error_2 = _b.sent();
                 console.log("Erro ao cadastrar cliente", error_2);
                 res.status(500).send("Erro ao cadastrar Cliente");
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
+        }
+    });
+}); });
+app.put("/alterarCliente", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, nome, nomeSocial, cpf, novoCpf, dataEmissao, clienteexist, error_3;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, nome = _a.nome, nomeSocial = _a.nomeSocial, cpf = _a.cpf, novoCpf = _a.novoCpf, dataEmissao = _a.dataEmissao;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, clienteService.buscarUsuarioPorCpf(dbName, cpf)];
+            case 2:
+                clienteexist = _b.sent();
+                if (!clienteexist) {
+                    res.status(404).send("Cliente não encontrado");
+                }
+                return [4 /*yield*/, clienteService.alterarCliente(dbName, nome, nomeSocial, novoCpf, dataEmissao, cpf)];
+            case 3:
+                _b.sent();
+                console.log("Cliente alterado com sucesso");
+                res.status(200).send("Cliente alterado com sucesso");
+                return [3 /*break*/, 5];
+            case 4:
+                error_3 = _b.sent();
+                console.error("Erro ao alterar cliente");
+                res.status(500).send("Erro ao alterar cliente");
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/listaPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var clientes, error_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, petservices.buscarPet("PetLovers")];
+            case 1:
+                clientes = _a.sent();
+                console.log(clientes);
+                res.json(clientes);
+                return [3 /*break*/, 3];
+            case 2:
+                error_4 = _a.sent();
+                console.error('Erro ao obter pets:', error_4);
+                res.status(500).json({ error: 'Erro interno ao obter pets' });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/cadastrarPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, nomePet, raca, genero, tipo, cpf, clienteexist, verificaCadastroPet, error_5;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, nomePet = _a.nomePet, raca = _a.raca, genero = _a.genero, tipo = _a.tipo, cpf = _a.cpf;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, clienteService.verificaCPF(cpf)];
+            case 2:
+                clienteexist = _b.sent();
+                if (!clienteexist) {
+                    console.log("cliente não cadastrado");
+                    res.status(404).send("Cliente não cadastrado");
+                }
+                return [4 /*yield*/, petservices.cadastrarPet(dbName, nomePet, raca, genero, tipo, cpf)];
+            case 3:
+                verificaCadastroPet = _b.sent();
+                if (verificaCadastroPet) {
+                    console.log("pet cadastrado com sucesso");
+                    res.status(200).send("Pet cadastrado com sucesso");
+                }
+                else {
+                    console.error("Erro ao cadastrar pet");
+                    res.status(500).send("Erro ao cadastrar pet");
+                }
+                return [3 /*break*/, 5];
+            case 4:
+                error_5 = _b.sent();
+                console.error("Erro ao cadastrar pet", error_5);
+                res.status(500).send("Erro ao cadastrar pet");
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
         }

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 type Props = {
     tema: string;
@@ -67,25 +68,53 @@ export default class FormularioCadastroPet extends Component<Props, State> {
 
     handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value } as unknown as Pick<State, keyof State>);
+    
+        // Converte o estado atual para um tipo desconhecido (unknown)
+        const currentState = this.state as unknown as State;
+    
+        // Cria um novo objeto com o campo atualizado
+        const updatedState = { ...currentState, [name]: value };
+    
+        // Converte o objeto atualizado de volta para o tipo State
+        this.setState(updatedState as State);
     };
+    
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        alert("Pet cadastrado com sucesso")
+
         const { nomePet, raca, genero, tipo, cpf } = this.state;
+        const { tema } = this.props;
 
-        const novoPet: Pet = { nomePet, raca, genero, tipo, donoCpf: cpf };
-        this.props.adicionarPet(novoPet);
+        try {
+            const response = await axios.post("http://localhost:5000/cadastrarPet", {
+                nomePet,
+                raca,
+                genero,
+                tipo,
+                cpf
+            });
 
-        this.setState({
-            nomePet: "",
-            raca: "",
-            genero: "",
-            tipo: "",
-            cpfValido: false,
-            cpf: ""
-        });
+            if (response.status === 200) {
+                alert("Pet cadastrado com sucesso");
+                const novoPet: Pet = { nomePet, raca, genero, tipo, donoCpf: cpf };
+                this.props.adicionarPet(novoPet);
+
+                this.setState({
+                    nomePet: "",
+                    raca: "",
+                    genero: "",
+                    tipo: "",
+                    cpfValido: false,
+                    cpf: ""
+                });
+            } else {
+                alert("Erro ao cadastrar pet");
+            }
+        } catch (error) {
+            console.error("Erro ao cadastrar pet", error);
+            alert("Erro ao cadastrar pet");
+        }
     };
 
     render() {
@@ -107,7 +136,12 @@ export default class FormularioCadastroPet extends Component<Props, State> {
                             value={cpf}
                             onChange={this.handleCpfChange}
                         />
-                        <button className="btn btn-outline-secondary" type="button" onClick={this.validarCpf} style={{ background: tema }}>
+                        <button
+                            className="btn btn-outline-secondary"
+                            type="button"
+                            onClick={this.validarCpf}
+                            style={{ background: tema }}
+                        >
                             Validar CPF
                         </button>
                     </div>
@@ -140,7 +174,7 @@ export default class FormularioCadastroPet extends Component<Props, State> {
                             />
                         </div>
                         <div className="input-group mb-3">
-                            <label htmlFor="genero">Genero do seu pet</label>
+                            <label htmlFor="genero">Gênero do seu pet</label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -166,7 +200,13 @@ export default class FormularioCadastroPet extends Component<Props, State> {
                             />
                         </div>
                         <div className="input-group mb-3">
-                            <button className="btn btn-outline-secondary" type="submit" style={{ background: tema }}>Cadastrar pet</button>
+                            <button
+                                className="btn btn-outline-secondary"
+                                type="submit"
+                                style={{ background: tema }}
+                            >
+                                Cadastrar pet
+                            </button>
                         </div>
                     </form>
                 )}

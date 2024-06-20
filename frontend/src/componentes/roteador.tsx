@@ -260,7 +260,7 @@ export default class Roteador extends Component<{}, State> {
                     />
                 ) : tela === "cadastroPet" ? (
                     <FormularioCadastroPet tema="#e3f2fd" adicionarPet={this.adicionarPet} clientes={clientes} />
-                ) : tela === "api/listaPet" ? (
+                ) : tela === "listaPet" ? (
                     <ListaPet pets={pets} />
                 ) : tela === "alterarPet" ? (
                     <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} pets={pets} />

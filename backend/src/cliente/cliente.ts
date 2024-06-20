@@ -81,4 +81,63 @@ export class Cliente {
 
         )
     }
+
+    async buscarUsuarioPorCpf(dbName: string, cpf: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError)
+                    reject(useError)
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!")
+                    this.connection.query(`SELECT * FROM usuario WHERE cpf = ?`, [cpf], (error, results) => {
+                        if (error) {
+                            console.error("Erro ao buscar usuário por CPF:", error)
+                            reject(error)
+                        } else {
+                            resolve(results[0])
+                        }
+                    })
+                }
+            })
+        })
+    }
+
+    async alterarCliente(
+        dbName: string,
+        nome: string,
+        nomeSocial:string,
+        cpf:string,
+        dt_emissao:string,
+        cpfAntigo:string
+    ): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError)
+                    reject(useError)
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!")
+                    this.connection.query(
+                        `
+                        UPDATE cliente
+                        SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?
+                        WHERE cpf = ?;
+                        `,
+                        [nome, nomeSocial, cpf, dt_emissao, cpfAntigo],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Erro ao atualizar equipamento:", error)
+                                reject(error)
+                            } else {
+                                console.log("Equipamento atualizado com sucesso!")
+                                resolve()
+                            }
+                        }
+                    )
+                }
+            })
+        })
+    }
+
 }
