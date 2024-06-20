@@ -136,7 +136,7 @@ app.get("/listaPet", function (req, res) { return __awaiter(void 0, void 0, void
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, petservices.buscarPet("PetLovers")];
+                return [4 /*yield*/, petservices.buscarPet(dbName)];
             case 1:
                 pets = _a.sent();
                 console.log(pets);
@@ -244,6 +244,48 @@ app.post("/cadastroServico", function (req, res) { return __awaiter(void 0, void
                 res.status(500).send("Erro ao cadastrar serviço");
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/listarProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var produtos, error_7;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, produtoservices.buscarProduto(dbName)];
+            case 1:
+                produtos = _a.sent();
+                console.log(produtos);
+                res.json(produtos);
+                return [3 /*break*/, 3];
+            case 2:
+                error_7 = _a.sent();
+                console.error('Erro ao obter produtos:', error_7);
+                res.status(500).json({ error: 'Erro interno ao obter prosutos' });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/listarServico", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var servicos, error_8;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, servicoSs.buscarServico(dbName)];
+            case 1:
+                servicos = _a.sent();
+                console.log(servicos);
+                res.json(servicos);
+                return [3 /*break*/, 3];
+            case 2:
+                error_8 = _a.sent();
+                console.error('Erro ao obter serviços:', error_8);
+                res.status(500).json({ error: 'Erro interno ao obter serviços' });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

@@ -85,7 +85,7 @@ app.post("/cadastroCliente", async (req, res) => {
 
 app.get("/listaPet", async (req, res) => {
     try {
-        const pets = await petservices.buscarPet("PetLovers");
+        const pets = await petservices.buscarPet(dbName);
         console.log(pets);
         res.json(pets);
     } catch (error) {
@@ -161,3 +161,26 @@ app.post("/cadastroServico", async (req, res) => {
         res.status(500).send("Erro ao cadastrar serviço")
     }
 })
+
+
+app.get("/listarProduto", async (req, res) => {
+    try {
+        const produtos = await produtoservices.buscarProduto(dbName)
+        console.log(produtos);
+        res.json(produtos);
+    } catch (error) {
+        console.error('Erro ao obter produtos:', error);
+        res.status(500).json({ error: 'Erro interno ao obter prosutos' });
+    }
+});
+
+app.get("/listarServico", async (req, res) => {
+    try {
+        const servicos = await servicoSs.buscarServico(dbName);
+        console.log(servicos);
+        res.json(servicos);
+    } catch (error) {
+        console.error('Erro ao obter serviços:', error);
+        res.status(500).json({ error: 'Erro interno ao obter serviços' });
+    }
+});
