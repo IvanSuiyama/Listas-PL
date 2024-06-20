@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 type Pet = {
     nomePet: string;
@@ -8,13 +9,47 @@ type Pet = {
     donoCpf: string;
 };
 
-type Props = {
+type State = {
     pets: Pet[];
+    errorMessage: string;
 };
 
-export default class ListaPet extends Component<Props> {
+export default class ListaPet extends Component<{}, State> {
+    constructor(props: {}) {
+        super(props);
+        this.state = {
+            pets: [],
+            errorMessage: ""
+        };
+    }
+
+    componentDidMount() {
+        this.fetchPets();
+    }
+
+    fetchPets = async () => {
+        try {
+            const response = await axios.get("http://localhost:5000/listaPet");
+            console.log("Resposta do backend:", response.data); // Verifique a resposta
+            this.setState({ pets: response.data });
+        } catch (error) {
+            console.error("Erro ao obter pets", error);
+            this.setState({ errorMessage: "Erro ao obter pets" });
+        }
+    };
+
     render() {
-        const { pets } = this.props;
+        const { pets, errorMessage } = this.state;
+
+        if (errorMessage) {
+            return (
+                <div className="container-fluid">
+                    <div className="alert alert-danger" role="alert">
+                        {errorMessage}
+                    </div>
+                </div>
+            );
+        }
 
         if (pets.length === 0) {
             return (
@@ -49,6 +84,7 @@ export default class ListaPet extends Component<Props> {
                             </div>
                             <div>
                                 <p><strong>CPF do Dono:</strong> {pet.donoCpf}</p>
+                                
                             </div>
                             {index !== pets.length - 1 && (
                                 <hr style={{ borderColor: "blue" }} />

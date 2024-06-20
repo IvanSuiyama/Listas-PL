@@ -108,8 +108,7 @@ export class Cliente {
         nome: string,
         nomeSocial:string,
         cpf:string,
-        dt_emissao:string,
-        cpfAntigo:string
+        dt_emissao:string
     ): Promise<void> {
         return new Promise((resolve, reject) => {
             this.connection.query(`USE ${dbName};`, (useError, _) => {
@@ -124,7 +123,7 @@ export class Cliente {
                         SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?
                         WHERE cpf = ?;
                         `,
-                        [nome, nomeSocial, cpf, dt_emissao, cpfAntigo],
+                        [nome, nomeSocial, cpf, dt_emissao, cpf],
                         (error, results) => {
                             if (error) {
                                 console.error("Erro ao atualizar equipamento:", error)

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios';
 
 type Props = {
     tema: string;
@@ -8,7 +9,7 @@ type Props = {
 type State = {
     nome: string;
     descricao: string;
-    valor: number;
+    valor: string;
 };
 
 export default class FormularioCadastroProduto extends Component<Props, State> {
@@ -17,30 +18,63 @@ export default class FormularioCadastroProduto extends Component<Props, State> {
         this.state = {
             nome: "",
             descricao: "",
-            valor: 0,
+            valor: "",
         };
     }
 
     handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        this.setState(prevState => ({
-            ...prevState,
-            [name]: name === "valor" ? parseFloat(value) : value
-        } as Pick<State, keyof State>));
+
+        // Substituir vírgulas por pontos no campo de valor
+        if (name === 'valor') {
+            const valorFormatado = value.replace(',', '.');
+            this.setState({
+                ...this.state,
+                [name]: valorFormatado
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                [name]: value
+            });
+        }
     };
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nome, descricao, valor } = this.state;
 
-        alert("Produto cadastrado com sucesso!");
-        const novoProduto = { nome, descricao, valor };
-        this.props.adicionarProduto(novoProduto); // Chamando a função adicionarProduto passada por props
-        this.setState({
-            nome: "",
-            descricao: "",
-            valor: 0
-        });
+        // Validar se o valor é numérico
+        if (!this.isNumeric(valor)) {
+            alert("Por favor, insira um valor numérico válido.");
+            return;
+        }
+
+        // Formatar o valor para garantir que seja um número válido (substituir vírgulas por pontos)
+        const valorFormatado = parseFloat(valor.replace(',', '.'));
+
+        try {
+            const response = await axios.post('http://localhost:5000/cadastroProduto', {
+                nome,
+                descricao,
+                valor: valorFormatado
+            });
+            console.log(response.data);
+            alert("Produto cadastrado com sucesso!");
+            this.props.adicionarProduto({ nome, descricao, valor: valorFormatado });
+            this.setState({
+                nome: "",
+                descricao: "",
+                valor: ""
+            });
+        } catch (error) {
+            console.error("Erro ao cadastrar produto", error);
+            alert("Erro ao cadastrar produto");
+        }
+    };
+
+    isNumeric = (value: string) => {
+        return /^\d+(\.\d+)?$/.test(value.replace(',', '.'));
     };
 
     render() {
@@ -79,7 +113,7 @@ export default class FormularioCadastroProduto extends Component<Props, State> {
                     <div className="input-group mb-3">
                         <label htmlFor="valor">Valor</label>
                         <input
-                            type="number"
+                            type="text" // Alterado para text
                             className="form-control"
                             placeholder="Valor"
                             aria-label="Valor"

@@ -156,7 +156,7 @@ var Cliente = /** @class */ (function () {
             });
         });
     };
-    Cliente.prototype.alterarCliente = function (dbName, nome, nomeSocial, cpf, dt_emissao, cpfAntigo) {
+    Cliente.prototype.alterarCliente = function (dbName, nome, nomeSocial, cpf, dt_emissao) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -168,7 +168,7 @@ var Cliente = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("\n                        UPDATE cliente\n                        SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?\n                        WHERE cpf = ?;\n                        ", [nome, nomeSocial, cpf, dt_emissao, cpfAntigo], function (error, results) {
+                                _this.connection.query("\n                        UPDATE cliente\n                        SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?\n                        WHERE cpf = ?;\n                        ", [nome, nomeSocial, cpf, dt_emissao, cpf], function (error, results) {
                                     if (error) {
                                         console.error("Erro ao atualizar equipamento:", error);
                                         reject(error);

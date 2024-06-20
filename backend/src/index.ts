@@ -1,9 +1,11 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import mysql, { Connection } from 'mysql'; // Importe também o 'Connection' do MySQL
+import mysql, { Connection } from 'mysql'; 
 import { createDatabaseAndTables } from "./database";
 import { Cliente } from "./cliente/cliente";
 import { Pet } from "./pet/pet";
+import { Produto } from "./produto/produto";
+import { Servico } from "./servico/servico";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const dbName = "PetLovers"
@@ -12,14 +14,12 @@ app.use(express.json());
 
 app.use(cors());
 
-// Configuração da conexão MySQL
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'fatec',
 });
 
-// Conectar ao MySQL e criar a database e tabelas
 connection.connect((err) => {
     if (err) {
         console.error('Erro ao conectar ao MySQL:', err);
@@ -29,18 +29,21 @@ connection.connect((err) => {
 
     createDatabaseAndTables(); 
 
-    // Após criar as tabelas, iniciar o servidor Express
     app.listen(PORT, () => {
         console.log(`Servidor iniciado na porta ${PORT}`);
     });
 });
 
-// Instanciar o serviço de Cliente após a conexão estar estabelecida
 const clienteService = new Cliente(connection);
 
-const petservices = new Pet(connection)
+const petservices = new Pet(connection);
 
-// Rotas da API
+const produtoservices = new Produto(connection);
+
+const servicoSs = new Servico(connection)
+
+
+
 app.get('/listarClientes', async (req, res) => {
     try {
         const clientes = await clienteService.buscarClientes("PetLovers");
@@ -78,32 +81,13 @@ app.post("/cadastroCliente", async (req, res) => {
     }
 });
 
-app.put("/alterarCliente", async (req: Request, res: Response) =>{
-    const {nome, nomeSocial, cpf, novoCpf, dataEmissao} = req.body
 
-    try {
-        const clienteexist = await clienteService.buscarUsuarioPorCpf(dbName, cpf)
-
-        if (!clienteexist) {
-            res.status(404).send("Cliente não encontrado")
-        }
-
-        await clienteService.alterarCliente(dbName, nome, nomeSocial, novoCpf, dataEmissao, cpf)
-        console.log("Cliente alterado com sucesso")
-        res.status(200).send("Cliente alterado com sucesso")
-    } catch (error) {
-        console.error("Erro ao alterar cliente")
-        res.status(500).send("Erro ao alterar cliente")
-    }
-
-
-} )
 
 app.get("/listaPet", async (req, res) => {
     try {
-        const clientes = await petservices.buscarPet("PetLovers");
-        console.log(clientes)
-        res.json(clientes);
+        const pets = await petservices.buscarPet("PetLovers");
+        console.log(pets);
+        res.json(pets);
     } catch (error) {
         console.error('Erro ao obter pets:', error);
         res.status(500).json({ error: 'Erro interno ao obter pets' });
@@ -135,3 +119,45 @@ app.post("/cadastrarPet", async (req, res) => {
     }
 });
 
+app.post("/cadastroProduto", async (req, res) => {
+    const {nome, descricao, valor} = req.body
+
+    try {
+        const verificaCad = await produtoservices.cadastrarProduto(dbName, nome, descricao, valor);
+
+        if (verificaCad) {
+            console.log("Produto cadastrado com sucesso")
+            res.status(200).send("Produto cadastrado com sucesso")
+        }
+        else{
+            console.error("Erro ao cadastrar produto")
+            res.status(500).send("Erro ao cadastrar produto")
+        }
+
+    } catch (error){
+        console.error("Erro ao cadastrar produto", error)
+        res.status(500).send("Erro ao cadastrar produto")
+    }
+})
+
+
+app.post("/cadastroServico", async (req, res) => {
+    const {nome, descricao, valor} = req.body
+
+    try {
+        const verificaCadServico = await servicoSs.cadastrarServico(dbName, nome, descricao, valor);
+
+        if (verificaCadServico) {
+            console.log("Serviço cadastrado com sucesso")
+            res.status(200).send("Serviço cadastrado com sucesso")
+        }
+        else{
+            console.error("Erro ao cadastrar serviço")
+            res.status(500).send("Erro ao cadastrar serviço")
+        }
+
+    } catch (error){
+        console.error("Erro ao cadastrar serviço", error)
+        res.status(500).send("Erro ao cadastrar serviço")
+    }
+})

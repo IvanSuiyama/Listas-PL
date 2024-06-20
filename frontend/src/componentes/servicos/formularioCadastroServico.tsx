@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios';
 
 type Props = {
     tema: string;
@@ -32,23 +33,38 @@ export default class FormularioCadastroServico extends Component<Props, State> {
         this.setState({ [name]: value } as Pick<State, keyof State>);
     };
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nome, descricao, valor } = this.state;
-        const valorNum = parseFloat(valor);
+
+        // Validar se o valor é numérico
+        const valorNum = parseFloat(valor.replace(',', '.')); // Substituir vírgulas por pontos
         if (isNaN(valorNum)) {
             alert("Valor do serviço inválido!");
             return;
         }
+
         const novoServico: Servico = { nome, descricao, valor: valorNum };
-        this.props.adicionarServico(novoServico);
-        alert("Serviço cadastrado com sucesso!");
-        // Limpar os campos após a submissão
-        this.setState({
-            nome: "",
-            descricao: "",
-            valor: "",
-        });
+
+        try {
+            const response = await axios.post('http://localhost:5000/cadastroServico', {
+                nome,
+                descricao,
+                valor: valorNum
+            });
+            console.log(response.data);
+            alert("Serviço cadastrado com sucesso!");
+            this.props.adicionarServico(novoServico);
+            // Limpar os campos após a submissão
+            this.setState({
+                nome: "",
+                descricao: "",
+                valor: "",
+            });
+        } catch (error) {
+            console.error("Erro ao cadastrar serviço", error);
+            alert("Erro ao cadastrar serviço");
+        }
     };
 
     render() {
@@ -84,7 +100,7 @@ export default class FormularioCadastroServico extends Component<Props, State> {
                     <div className="input-group mb-3">
                         <label htmlFor="valor">Valor do Serviço</label>
                         <input
-                            type="text"
+                            type="text" // Alterado para text
                             className="form-control"
                             placeholder="Valor"
                             aria-label="Valor"

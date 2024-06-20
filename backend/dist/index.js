@@ -41,22 +41,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var cors_1 = __importDefault(require("cors"));
-var mysql_1 = __importDefault(require("mysql")); // Importe também o 'Connection' do MySQL
+var mysql_1 = __importDefault(require("mysql"));
 var database_1 = require("./database");
 var cliente_1 = require("./cliente/cliente");
 var pet_1 = require("./pet/pet");
+var produto_1 = require("./produto/produto");
+var servico_1 = require("./servico/servico");
 var app = (0, express_1.default)();
 var PORT = process.env.PORT || 5000;
 var dbName = "PetLovers";
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
-// Configuração da conexão MySQL
 var connection = mysql_1.default.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'fatec',
 });
-// Conectar ao MySQL e criar a database e tabelas
 connection.connect(function (err) {
     if (err) {
         console.error('Erro ao conectar ao MySQL:', err);
@@ -64,15 +64,14 @@ connection.connect(function (err) {
     }
     console.log('Conectado ao MySQL.');
     (0, database_1.createDatabaseAndTables)();
-    // Após criar as tabelas, iniciar o servidor Express
     app.listen(PORT, function () {
         console.log("Servidor iniciado na porta ".concat(PORT));
     });
 });
-// Instanciar o serviço de Cliente após a conexão estar estabelecida
 var clienteService = new cliente_1.Cliente(connection);
 var petservices = new pet_1.Pet(connection);
-// Rotas da API
+var produtoservices = new produto_1.Produto(connection);
+var servicoSs = new servico_1.Servico(connection);
 app.get('/listarClientes', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var clientes, error_1;
     return __generator(this, function (_a) {
@@ -131,51 +130,21 @@ app.post("/cadastroCliente", function (req, res) { return __awaiter(void 0, void
         }
     });
 }); });
-app.put("/alterarCliente", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, nome, nomeSocial, cpf, novoCpf, dataEmissao, clienteexist, error_3;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                _a = req.body, nome = _a.nome, nomeSocial = _a.nomeSocial, cpf = _a.cpf, novoCpf = _a.novoCpf, dataEmissao = _a.dataEmissao;
-                _b.label = 1;
-            case 1:
-                _b.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, clienteService.buscarUsuarioPorCpf(dbName, cpf)];
-            case 2:
-                clienteexist = _b.sent();
-                if (!clienteexist) {
-                    res.status(404).send("Cliente não encontrado");
-                }
-                return [4 /*yield*/, clienteService.alterarCliente(dbName, nome, nomeSocial, novoCpf, dataEmissao, cpf)];
-            case 3:
-                _b.sent();
-                console.log("Cliente alterado com sucesso");
-                res.status(200).send("Cliente alterado com sucesso");
-                return [3 /*break*/, 5];
-            case 4:
-                error_3 = _b.sent();
-                console.error("Erro ao alterar cliente");
-                res.status(500).send("Erro ao alterar cliente");
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
-        }
-    });
-}); });
 app.get("/listaPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var clientes, error_4;
+    var pets, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 return [4 /*yield*/, petservices.buscarPet("PetLovers")];
             case 1:
-                clientes = _a.sent();
-                console.log(clientes);
-                res.json(clientes);
+                pets = _a.sent();
+                console.log(pets);
+                res.json(pets);
                 return [3 /*break*/, 3];
             case 2:
-                error_4 = _a.sent();
-                console.error('Erro ao obter pets:', error_4);
+                error_3 = _a.sent();
+                console.error('Erro ao obter pets:', error_3);
                 res.status(500).json({ error: 'Erro interno ao obter pets' });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
@@ -183,7 +152,7 @@ app.get("/listaPet", function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); });
 app.post("/cadastrarPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, nomePet, raca, genero, tipo, cpf, clienteExist, verificaCadastroPet, error_5;
+    var _a, nomePet, raca, genero, tipo, cpf, clienteExist, verificaCadastroPet, error_4;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -211,10 +180,70 @@ app.post("/cadastrarPet", function (req, res) { return __awaiter(void 0, void 0,
                 }
                 return [3 /*break*/, 5];
             case 4:
-                error_5 = _b.sent();
-                console.error("Erro ao cadastrar pet", error_5);
+                error_4 = _b.sent();
+                console.error("Erro ao cadastrar pet", error_4);
                 return [2 /*return*/, res.status(500).send("Erro ao cadastrar pet")];
             case 5: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/cadastroProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, nome, descricao, valor, verificaCad, error_5;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, nome = _a.nome, descricao = _a.descricao, valor = _a.valor;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, produtoservices.cadastrarProduto(dbName, nome, descricao, valor)];
+            case 2:
+                verificaCad = _b.sent();
+                if (verificaCad) {
+                    console.log("Produto cadastrado com sucesso");
+                    res.status(200).send("Produto cadastrado com sucesso");
+                }
+                else {
+                    console.error("Erro ao cadastrar produto");
+                    res.status(500).send("Erro ao cadastrar produto");
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_5 = _b.sent();
+                console.error("Erro ao cadastrar produto", error_5);
+                res.status(500).send("Erro ao cadastrar produto");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/cadastroServico", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, nome, descricao, valor, verificaCadServico, error_6;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, nome = _a.nome, descricao = _a.descricao, valor = _a.valor;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, servicoSs.cadastrarServico(dbName, nome, descricao, valor)];
+            case 2:
+                verificaCadServico = _b.sent();
+                if (verificaCadServico) {
+                    console.log("Serviço cadastrado com sucesso");
+                    res.status(200).send("Serviço cadastrado com sucesso");
+                }
+                else {
+                    console.error("Erro ao cadastrar serviço");
+                    res.status(500).send("Erro ao cadastrar serviço");
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_6 = _b.sent();
+                console.error("Erro ao cadastrar serviço", error_6);
+                res.status(500).send("Erro ao cadastrar serviço");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
