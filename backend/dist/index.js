@@ -183,7 +183,7 @@ app.get("/listaPet", function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); });
 app.post("/cadastrarPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, nomePet, raca, genero, tipo, cpf, clienteexist, verificaCadastroPet, error_5;
+    var _a, nomePet, raca, genero, tipo, cpf, clienteExist, verificaCadastroPet, error_5;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -193,28 +193,27 @@ app.post("/cadastrarPet", function (req, res) { return __awaiter(void 0, void 0,
                 _b.trys.push([1, 4, , 5]);
                 return [4 /*yield*/, clienteService.verificaCPF(cpf)];
             case 2:
-                clienteexist = _b.sent();
-                if (!clienteexist) {
-                    console.log("cliente não cadastrado");
-                    res.status(404).send("Cliente não cadastrado");
+                clienteExist = _b.sent();
+                if (!clienteExist) {
+                    console.log("Cliente não cadastrado");
+                    return [2 /*return*/, res.status(404).send("Cliente não cadastrado")];
                 }
                 return [4 /*yield*/, petservices.cadastrarPet(dbName, nomePet, raca, genero, tipo, cpf)];
             case 3:
                 verificaCadastroPet = _b.sent();
                 if (verificaCadastroPet) {
-                    console.log("pet cadastrado com sucesso");
-                    res.status(200).send("Pet cadastrado com sucesso");
+                    console.log("Pet cadastrado com sucesso");
+                    return [2 /*return*/, res.status(200).send("Pet cadastrado com sucesso")];
                 }
                 else {
                     console.error("Erro ao cadastrar pet");
-                    res.status(500).send("Erro ao cadastrar pet");
+                    return [2 /*return*/, res.status(500).send("Erro ao cadastrar pet")];
                 }
                 return [3 /*break*/, 5];
             case 4:
                 error_5 = _b.sent();
                 console.error("Erro ao cadastrar pet", error_5);
-                res.status(500).send("Erro ao cadastrar pet");
-                return [3 /*break*/, 5];
+                return [2 /*return*/, res.status(500).send("Erro ao cadastrar pet")];
             case 5: return [2 /*return*/];
         }
     });

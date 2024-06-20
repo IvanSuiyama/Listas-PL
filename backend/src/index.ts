@@ -110,34 +110,28 @@ app.get("/listaPet", async (req, res) => {
     }
 });
 
-app.post("/cadastrarPet", async (req, res) =>{ 
-    const {nomePet, raca, genero, tipo, cpf} = req.body
+app.post("/cadastrarPet", async (req, res) => {
+    const { nomePet, raca, genero, tipo, cpf } = req.body;
 
-    try{
-        const clienteexist = await clienteService.verificaCPF(cpf);
+    try {
+        const clienteExist = await clienteService.verificaCPF(cpf);
 
-        if (!clienteexist) {
-            console.log("cliente não cadastrado")
-            res.status(404).send("Cliente não cadastrado")
+        if (!clienteExist) {
+            console.log("Cliente não cadastrado");
+            return res.status(404).send("Cliente não cadastrado");
         }
 
-        const verificaCadastroPet = await petservices.cadastrarPet(dbName, nomePet, raca, genero, tipo, cpf)
+        const verificaCadastroPet = await petservices.cadastrarPet(dbName, nomePet, raca, genero, tipo, cpf);
         if (verificaCadastroPet) {
-            console.log("pet cadastrado com sucesso")
-            res.status(200).send("Pet cadastrado com sucesso")
+            console.log("Pet cadastrado com sucesso");
+            return res.status(200).send("Pet cadastrado com sucesso");
+        } else {
+            console.error("Erro ao cadastrar pet");
+            return res.status(500).send("Erro ao cadastrar pet");
         }
-        else {
-            console.error("Erro ao cadastrar pet")
-            res.status(500).send("Erro ao cadastrar pet")
-
-        }
-
-
     } catch (error) {
-        console.error("Erro ao cadastrar pet", error)
-        res.status(500).send("Erro ao cadastrar pet")
+        console.error("Erro ao cadastrar pet", error);
+        return res.status(500).send("Erro ao cadastrar pet");
     }
-
-})
-
+});
 
