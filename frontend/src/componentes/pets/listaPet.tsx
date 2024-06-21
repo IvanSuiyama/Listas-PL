@@ -6,7 +6,7 @@ type Pet = {
     raca: string;
     genero: string;
     tipo: string;
-    donoCpf: string;
+    cpfDoDono: string;
 };
 
 type State = {
@@ -83,7 +83,7 @@ export default class ListaPet extends Component<{}, State> {
                                 <p><strong>Tipo:</strong> {pet.tipo}</p>
                             </div>
                             <div>
-                                <p><strong>CPF do Dono:</strong> {pet.donoCpf}</p>
+                                <p><strong>CPF do Dono:</strong> {pet.cpfDoDono}</p>
                                 
                             </div>
                             {index !== pets.length - 1 && (
