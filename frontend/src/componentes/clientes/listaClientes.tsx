@@ -22,7 +22,7 @@ export default class ListaCliente extends Component<Props, State> {
         super(props);
         this.state = {
             clientes: [],
-            error :null
+            error: null
         };
     }
 
@@ -64,6 +64,11 @@ export default class ListaCliente extends Component<Props, State> {
         return date.toLocaleDateString('pt-BR', options);
     }
 
+    formatCpf(cpf: string) {
+        if (!cpf) return 'CPF inválido';
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+
     render() {
         const { clientes, error } = this.state;
 
@@ -81,7 +86,7 @@ export default class ListaCliente extends Component<Props, State> {
                                 <div className="list-group-item list-group-item-action">
                                     <h5>{cliente.nome}</h5>
                                     <p>Nome Social: {cliente.nomeSocial}</p>
-                                    <p>CPF: {cliente.cpf}</p>
+                                    <p>CPF: {this.formatCpf(cliente.cpf)}</p>
                                     {/* Verifica se dataEmissao existe antes de formatar */}
                                     <p>Data de Emissão: {cliente.dataEmissao ? this.formatDate(cliente.dataEmissao) : 'Data não disponível'}</p>
                                 </div>

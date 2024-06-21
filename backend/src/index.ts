@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import mysql, { Connection } from 'mysql'; 
+import mysql, { Connection } from 'mysql';
 import { createDatabaseAndTables } from "./database";
 import { Cliente } from "./cliente/cliente";
 import { Pet } from "./pet/pet";
@@ -27,7 +27,7 @@ connection.connect((err) => {
     }
     console.log('Conectado ao MySQL.');
 
-    createDatabaseAndTables(); 
+    createDatabaseAndTables();
 
     app.listen(PORT, () => {
         console.log(`Servidor iniciado na porta ${PORT}`);
@@ -120,7 +120,7 @@ app.post("/cadastrarPet", async (req, res) => {
 });
 
 app.post("/cadastroProduto", async (req, res) => {
-    const {nome, descricao, valor} = req.body
+    const { nome, descricao, valor } = req.body
 
     try {
         const verificaCad = await produtoservices.cadastrarProduto(dbName, nome, descricao, valor);
@@ -129,12 +129,12 @@ app.post("/cadastroProduto", async (req, res) => {
             console.log("Produto cadastrado com sucesso")
             res.status(200).send("Produto cadastrado com sucesso")
         }
-        else{
+        else {
             console.error("Erro ao cadastrar produto")
             res.status(500).send("Erro ao cadastrar produto")
         }
 
-    } catch (error){
+    } catch (error) {
         console.error("Erro ao cadastrar produto", error)
         res.status(500).send("Erro ao cadastrar produto")
     }
@@ -142,7 +142,7 @@ app.post("/cadastroProduto", async (req, res) => {
 
 
 app.post("/cadastroServico", async (req, res) => {
-    const {nome, descricao, valor} = req.body
+    const { nome, descricao, valor } = req.body
 
     try {
         const verificaCadServico = await servicoSs.cadastrarServico(dbName, nome, descricao, valor);
@@ -151,12 +151,12 @@ app.post("/cadastroServico", async (req, res) => {
             console.log("Serviço cadastrado com sucesso")
             res.status(200).send("Serviço cadastrado com sucesso")
         }
-        else{
+        else {
             console.error("Erro ao cadastrar serviço")
             res.status(500).send("Erro ao cadastrar serviço")
         }
 
-    } catch (error){
+    } catch (error) {
         console.error("Erro ao cadastrar serviço", error)
         res.status(500).send("Erro ao cadastrar serviço")
     }
@@ -182,5 +182,59 @@ app.get("/listarServico", async (req, res) => {
     } catch (error) {
         console.error('Erro ao obter serviços:', error);
         res.status(500).json({ error: 'Erro interno ao obter serviços' });
+    }
+});
+
+app.put("/alterarClienes", async (req, res) => {
+    const { cpf } = req.body
+    const { nome, dataEmissao, nomeSocial, cpfNovo } = req.body
+
+    try {
+        const verificaCLiene = await clienteService.buscarclienteporCpf(dbName, cpf)
+
+        if (!verificaCLiene) {
+            console.error("Cliente não cadastrado")
+            res.status(404).send("Cliente não enconrado")
+        }
+
+        else {
+            const verificaAltera = await clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)
+
+            if (verificaAltera) {
+                console.log("Cliente alterado com sucesso")
+                res.status(200).send("Cliente alterado com sucesso")
+            }
+
+            else {
+                console.error("Erro ao alterar cliente")
+                res.status(500).send("Erro ao aterar cliente")
+            }
+        }
+    } catch (error) {
+        console.error("Erro ao alterar cliente", error)
+        res.status(500).send("Erro ao cadstrar cliente")
+    }
+
+})
+
+app.get("/buscarClientePorCpf", async (req: Request, res: Response) => {
+    const cpf: string = req.query.cpf as string;
+
+    if (!cpf) {
+        res.status(400).send("Parâmetro 'cpf' não foi fornecido");
+        return;
+    }
+
+    try {
+        const cliente = await clienteService.buscarclienteporCpf(dbName, cpf);
+
+        if (!cliente) {
+            res.status(404).json(null); // Cliente não encontrado
+        } else {
+            res.status(200).json(cliente); // Cliente encontrado
+        }
+    } catch (error) {
+        console.error("Erro ao buscar cliente por CPF", error);
+        res.status(500).send("Erro ao buscar cliente por CPF");
     }
 });

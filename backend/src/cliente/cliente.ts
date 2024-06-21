@@ -82,7 +82,7 @@ export class Cliente {
         )
     }
 
-    async buscarUsuarioPorCpf(dbName: string, cpf: string): Promise<any> {
+    async buscarclienteporCpf(dbName: string, cpf: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.connection.query(`USE ${dbName};`, (useError, _) => {
                 if (useError) {
@@ -90,9 +90,9 @@ export class Cliente {
                     reject(useError)
                 } else {
                     console.log("Banco de dados selecionado com sucesso!")
-                    this.connection.query(`SELECT * FROM usuario WHERE cpf = ?`, [cpf], (error, results) => {
+                    this.connection.query(`SELECT * FROM cliente WHERE cpf = ?`, [cpf], (error, results) => {
                         if (error) {
-                            console.error("Erro ao buscar usuário por CPF:", error)
+                            console.error("Erro ao buscar cliente por CPF:", error)
                             reject(error)
                         } else {
                             resolve(results[0])
@@ -108,8 +108,9 @@ export class Cliente {
         nome: string,
         nomeSocial:string,
         cpf:string,
-        dt_emissao:string
-    ): Promise<void> {
+        dt_emissao:string,
+        cpfNovo:string,
+    ) {
         return new Promise((resolve, reject) => {
             this.connection.query(`USE ${dbName};`, (useError, _) => {
                 if (useError) {
@@ -123,14 +124,14 @@ export class Cliente {
                         SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?
                         WHERE cpf = ?;
                         `,
-                        [nome, nomeSocial, cpf, dt_emissao, cpf],
+                        [nome, nomeSocial, cpfNovo, dt_emissao, cpf],
                         (error, results) => {
                             if (error) {
-                                console.error("Erro ao atualizar equipamento:", error)
+                                console.error("Erro ao atualizar cliente:", error)
                                 reject(error)
                             } else {
-                                console.log("Equipamento atualizado com sucesso!")
-                                resolve()
+                                console.log("Cliente atualizado com sucesso!")
+                                resolve(results[0])
                             }
                         }
                     )

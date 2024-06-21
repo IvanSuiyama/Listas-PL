@@ -289,3 +289,74 @@ app.get("/listarServico", function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); });
+app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, _a, nome, dataEmissao, nomeSocial, cpfNovo, verificaCLiene, verificaAltera, error_9;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                cpf = req.body.cpf;
+                _a = req.body, nome = _a.nome, dataEmissao = _a.dataEmissao, nomeSocial = _a.nomeSocial, cpfNovo = _a.cpfNovo;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 6, , 7]);
+                return [4 /*yield*/, clienteService.buscarclienteporCpf(dbName, cpf)];
+            case 2:
+                verificaCLiene = _b.sent();
+                if (!!verificaCLiene) return [3 /*break*/, 3];
+                console.error("Cliente não cadastrado");
+                res.status(404).send("Cliente não enconrado");
+                return [3 /*break*/, 5];
+            case 3: return [4 /*yield*/, clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)];
+            case 4:
+                verificaAltera = _b.sent();
+                if (verificaAltera) {
+                    console.log("Cliente alterado com sucesso");
+                    res.status(200).send("Cliente alterado com sucesso");
+                }
+                else {
+                    console.error("Erro ao alterar cliente");
+                    res.status(500).send("Erro ao aterar cliente");
+                }
+                _b.label = 5;
+            case 5: return [3 /*break*/, 7];
+            case 6:
+                error_9 = _b.sent();
+                console.error("Erro ao alterar cliente", error_9);
+                res.status(500).send("Erro ao cadstrar cliente");
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/buscarClientePorCpf", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, cliente, error_10;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cpf = req.query.cpf;
+                if (!cpf) {
+                    res.status(400).send("Parâmetro 'cpf' não foi fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, clienteService.buscarclienteporCpf(dbName, cpf)];
+            case 2:
+                cliente = _a.sent();
+                if (!cliente) {
+                    res.status(404).json(null); // Cliente não encontrado
+                }
+                else {
+                    res.status(200).json(cliente); // Cliente encontrado
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_10 = _a.sent();
+                console.error("Erro ao buscar cliente por CPF", error_10);
+                res.status(500).send("Erro ao buscar cliente por CPF");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import InputMask from "react-input-mask";
 
 type Props = {
     tema: string;
@@ -19,6 +20,9 @@ type State = {
     nome: string;
     nomeSocial: string;
     dataEmissao: string;
+    cpfNovo: string;
+    erroCpfNaoCadastrado: boolean;
+    erroAoAlterarCliente: boolean;
 };
 
 export default class AlterarCliente extends Component<Props, State> {
@@ -29,7 +33,10 @@ export default class AlterarCliente extends Component<Props, State> {
             cpfValido: false,
             nome: "",
             nomeSocial: "",
-            dataEmissao: ""
+            dataEmissao: "",
+            cpfNovo: "",
+            erroCpfNaoCadastrado: false,
+            erroAoAlterarCliente: false
         };
     }
 
@@ -37,30 +44,44 @@ export default class AlterarCliente extends Component<Props, State> {
         this.setState({ cpf: event.target.value });
     };
 
-    validarCpf = () => {
+    handleCpfNovoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ cpfNovo: event.target.value });
+    };
+
+    validarCpf = async () => {
         const { cpf } = this.state;
         const { clientes } = this.props;
 
-        const cpfValido = this.isValidCpf(cpf) && clientes.some(cliente => cliente.cpf === cpf);
-        this.setState({ cpfValido });
+        const cleanedCpf = cpf.replace(/\D/g, '');
 
-        if (cpfValido) {
-            // Encontrou cliente com CPF válido, preencher os campos com os dados do cliente
-            const cliente = clientes.find(cliente => cliente.cpf === cpf);
-            if (cliente) {
-                this.setState({
-                    nome: cliente.nome,
-                    nomeSocial: cliente.nomeSocial,
-                    dataEmissao: cliente.dataEmissao
-                });
+        try {
+            const response = await fetch(`http://localhost:5000/buscarClientePorCpf?cpf=${cleanedCpf}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data) {
+                    this.setState({
+                        nome: data.nome,
+                        nomeSocial: data.nomeSocial,
+                        dataEmissao: data.dataEmissao,
+                        cpfNovo: data.cpf,
+                        erroCpfNaoCadastrado: false,
+                        cpfValido: true // Define como válido após encontrar cliente
+                    });
+                } else {
+                    this.setState({
+                        erroCpfNaoCadastrado: true,
+                        cpfValido: false // Define como inválido se não encontrar cliente
+                    });
+                }
+            } else {
+                console.error(`Erro ao validar CPF: ${response.statusText}`);
+                alert("Erro ao validar CPF");
             }
-        } else {
-            // Limpar os campos se o CPF não for válido
-            this.setState({
-                nome: "",
-                nomeSocial: "",
-                dataEmissao: ""
-            });
+        } catch (error) {
+            console.error("Erro ao validar CPF", error);
+            alert("Erro ao validar CPF");
         }
     };
 
@@ -83,37 +104,71 @@ export default class AlterarCliente extends Component<Props, State> {
 
     handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value } as unknown as Pick<State, keyof State>);
+    
+        // Converter para unknown primeiro
+        const unknownValue: unknown = { [name]: value };
+    
+        // Converter para Pick<State, keyof State>
+        const typedValue = unknownValue as Pick<State, keyof State>;
+    
+        this.setState(typedValue);
     };
     
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const { nome, nomeSocial, dataEmissao, cpf } = this.state;
-        const clienteAtualizado: Cliente = { nome, nomeSocial, dataEmissao, cpf };
-        this.props.alterarCliente(clienteAtualizado);
-        alert("Cliente alterado com sucesso!");
-        // Limpar os campos após a submissão
-        this.setState({
-            cpf: "",
-            cpfValido: false,
-            nome: "",
-            nomeSocial: "",
-            dataEmissao: ""
-        });
+        const { nome, nomeSocial, dataEmissao, cpf, cpfNovo } = this.state;
+
+        const cleanedCpf = cpf.replace(/\D/g, '');
+        const cleanedCpfNovo = cpfNovo.replace(/\D/g, '');
+
+        try {
+            const response = await fetch("http://localhost:5000/alterarClienes", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ nome, nomeSocial, dataEmissao, cpf: cleanedCpf, cpfNovo: cleanedCpfNovo })
+            });
+
+            if (response.ok) {
+                const clienteAtualizado: Cliente = { nome, nomeSocial, dataEmissao, cpf: cleanedCpfNovo };
+                this.props.alterarCliente(clienteAtualizado);
+                alert("Cliente alterado com sucesso!");
+                this.setState({
+                    cpf: "",
+                    cpfValido: false,
+                    nome: "",
+                    nomeSocial: "",
+                    dataEmissao: "",
+                    cpfNovo: "",
+                    erroCpfNaoCadastrado: false,
+                    erroAoAlterarCliente: false // Resetar estado de erro ao alterar cliente
+                });
+            } else {
+                const errorText = await response.text();
+                console.error(`Erro ao alterar cliente: ${errorText}`);
+                this.setState({ erroAoAlterarCliente: true });
+                alert(`Erro ao alterar cliente: ${errorText}`);
+            }
+        } catch (error) {
+            console.error("Erro ao enviar solicitação para alterar cliente", error);
+            this.setState({ erroAoAlterarCliente: true });
+            alert("Erro ao alterar cliente");
+        }
     };
 
     render() {
         const { tema } = this.props;
-        const { cpf, cpfValido, nome, nomeSocial, dataEmissao } = this.state;
+        const { cpf, cpfValido, nome, nomeSocial, dataEmissao, cpfNovo, erroCpfNaoCadastrado, erroAoAlterarCliente } = this.state;
 
         return (
             <div className="container-fluid">
                 {!cpfValido ? (
                     <div className="input-group mb-3">
                         <label htmlFor="cpf">CPF do Cliente</label>
-                        <input
-                            type="text"
+                        <InputMask
+                            mask="999.999.999-99"
                             className="form-control"
                             placeholder="CPF"
                             aria-label="CPF"
@@ -128,6 +183,16 @@ export default class AlterarCliente extends Component<Props, State> {
                     </div>
                 ) : (
                     <form onSubmit={this.handleSubmit}>
+                        {erroCpfNaoCadastrado && (
+                            <div className="alert alert-danger" role="alert">
+                                Cliente não cadastrado.
+                            </div>
+                        )}
+                        {erroAoAlterarCliente && (
+                            <div className="alert alert-danger" role="alert">
+                                Erro ao alterar cliente.
+                            </div>
+                        )}
                         <div className="input-group mb-3">
                             <label htmlFor="nome">Nome</label>
                             <input
@@ -165,6 +230,19 @@ export default class AlterarCliente extends Component<Props, State> {
                                 name="dataEmissao"
                                 value={dataEmissao}
                                 onChange={this.handleInputChange}
+                            />
+                        </div>
+                        <div className="input-group mb-3">
+                            <label htmlFor="cpfNovo">Novo CPF</label>
+                            <InputMask
+                                mask="999.999.999-99"
+                                className="form-control"
+                                placeholder="Novo CPF"
+                                aria-label="Novo CPF"
+                                aria-describedby="basic-addon1"
+                                name="cpfNovo"
+                                value={cpfNovo}
+                                onChange={this.handleCpfNovoChange}
                             />
                         </div>
                         <div className="input-group mb-3">

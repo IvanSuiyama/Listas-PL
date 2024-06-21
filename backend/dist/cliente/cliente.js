@@ -129,7 +129,7 @@ var Cliente = /** @class */ (function () {
             });
         });
     };
-    Cliente.prototype.buscarUsuarioPorCpf = function (dbName, cpf) {
+    Cliente.prototype.buscarclienteporCpf = function (dbName, cpf) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -141,9 +141,9 @@ var Cliente = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("SELECT * FROM usuario WHERE cpf = ?", [cpf], function (error, results) {
+                                _this.connection.query("SELECT * FROM cliente WHERE cpf = ?", [cpf], function (error, results) {
                                     if (error) {
-                                        console.error("Erro ao buscar usuário por CPF:", error);
+                                        console.error("Erro ao buscar cliente por CPF:", error);
                                         reject(error);
                                     }
                                     else {
@@ -156,7 +156,7 @@ var Cliente = /** @class */ (function () {
             });
         });
     };
-    Cliente.prototype.alterarCliente = function (dbName, nome, nomeSocial, cpf, dt_emissao) {
+    Cliente.prototype.alterarCliente = function (dbName, nome, nomeSocial, cpf, dt_emissao, cpfNovo) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -168,14 +168,14 @@ var Cliente = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("\n                        UPDATE cliente\n                        SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?\n                        WHERE cpf = ?;\n                        ", [nome, nomeSocial, cpf, dt_emissao, cpf], function (error, results) {
+                                _this.connection.query("\n                        UPDATE cliente\n                        SET nome = ?, nomeSocial = ?, cpf = ?, dt_emissao = ?\n                        WHERE cpf = ?;\n                        ", [nome, nomeSocial, cpfNovo, dt_emissao, cpf], function (error, results) {
                                     if (error) {
-                                        console.error("Erro ao atualizar equipamento:", error);
+                                        console.error("Erro ao atualizar cliente:", error);
                                         reject(error);
                                     }
                                     else {
-                                        console.log("Equipamento atualizado com sucesso!");
-                                        resolve();
+                                        console.log("Cliente atualizado com sucesso!");
+                                        resolve(results[0]);
                                     }
                                 });
                             }

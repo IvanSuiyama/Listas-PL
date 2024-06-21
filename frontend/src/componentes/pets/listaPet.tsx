@@ -38,6 +38,11 @@ export default class ListaPet extends Component<{}, State> {
         }
     };
 
+    formatCpf(cpf: string) {
+        if (!cpf) return 'CPF inválido';
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+
     render() {
         const { pets, errorMessage } = this.state;
 
@@ -83,8 +88,7 @@ export default class ListaPet extends Component<{}, State> {
                                 <p><strong>Tipo:</strong> {pet.tipo}</p>
                             </div>
                             <div>
-                                <p><strong>CPF do Dono:</strong> {pet.cpfDoDono}</p>
-                                
+                                <p><strong>CPF do Dono:</strong> {this.formatCpf(pet.cpfDoDono)}</p>
                             </div>
                             {index !== pets.length - 1 && (
                                 <hr style={{ borderColor: "blue" }} />

@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, RefObject } from "react";
+import InputMask from "react-input-mask";
 
 type Props = {
     tema: string;
-    adicionarCliente: (novoCliente: { nome: string; nomeSocial: string; cpf: string; dataEmissao: string }) => void; // Definindo a propriedade adicionarCliente
+    adicionarCliente: (novoCliente: { nome: string; nomeSocial: string; cpf: string; dataEmissao: string }) => void;
 };
 
 type State = {
@@ -13,6 +14,8 @@ type State = {
 };
 
 export default class FormularioCadastroCliente extends Component<Props, State> {
+    cpfInputRef: RefObject<HTMLInputElement>; // Corrigido para RefObject<HTMLInputElement>
+
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -21,6 +24,8 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
             cpf: "",
             dataEmissao: "",
         };
+
+        this.cpfInputRef = React.createRef(); // Criando a ref como RefObject<HTMLInputElement>
     }
 
     isValidCpf = (cpf: string): boolean => {
@@ -44,21 +49,23 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
         const { name, value } = event.target;
         this.setState(prevState => ({
             ...prevState,
-            [name]: value
-        } as Pick<State, keyof State>));
+            [name as string]: value // Corrigindo o type assertion para string
+        }));
     };
 
     handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nome, nomeSocial, cpf, dataEmissao } = this.state;
-    
-        if (!this.isValidCpf(cpf)) {
+
+        const cleanedCpf = cpf.replace(/\D/g, '');
+
+        if (!this.isValidCpf(cleanedCpf)) {
             alert("CPF inválido!");
             return; // Evita continuar o processo de cadastro se o CPF for inválido
         }
-    
-        const novoCliente = { nome, nomeSocial, cpf, dataEmissao };
-    
+
+        const novoCliente = { nome, nomeSocial, cpf: cleanedCpf, dataEmissao };
+
         try {
             const response = await fetch('http://localhost:5000/cadastroCliente', {
                 method: 'POST',
@@ -67,7 +74,7 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
                 },
                 body: JSON.stringify(novoCliente),
             });
-    
+
             if (response.ok) {
                 alert("Cliente cadastrado com sucesso!");
                 this.props.adicionarCliente(novoCliente); // Chamando a função adicionarCliente passada por props
@@ -93,6 +100,7 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
             }
         }
     };
+
     render() {
         const { tema } = this.props;
         const { nome, nomeSocial, cpf, dataEmissao } = this.state;
@@ -128,8 +136,8 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
                     </div>
                     <div className="input-group mb-3">
                         <label htmlFor="cpf">CPF</label>
-                        <input
-                            type="text"
+                        <InputMask
+                            mask="999.999.999-99"
                             className="form-control"
                             placeholder="CPF"
                             aria-label="CPF"
@@ -137,6 +145,7 @@ export default class FormularioCadastroCliente extends Component<Props, State> {
                             name="cpf"
                             value={cpf}
                             onChange={this.handleInputChange}
+                            inputRef={this.cpfInputRef} // Passando a ref correta
                         />
                     </div>
                     <div className="input-group mb-3">

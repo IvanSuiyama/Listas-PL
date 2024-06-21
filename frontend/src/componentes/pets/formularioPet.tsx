@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import InputMask from "react-input-mask";
 
 type Props = {
     tema: string;
@@ -47,18 +48,20 @@ export default class FormularioCadastroPet extends Component<Props, State> {
 
         const { nomePet, raca, genero, tipo, cpf } = this.state;
 
+        const cleanedCpf = cpf.replace(/\D/g, '');
+
         try {
             const response = await axios.post("http://localhost:5000/cadastrarPet", {
                 nomePet,
                 raca,
                 genero,
                 tipo,
-                cpf
+                cpf: cleanedCpf
             });
 
             if (response.status === 200) {
                 alert("Pet cadastrado com sucesso");
-                const novoPet: Pet = { nomePet, raca, genero, tipo, donoCpf: cpf };
+                const novoPet: Pet = { nomePet, raca, genero, tipo, donoCpf: cleanedCpf };
                 this.props.adicionarPet(novoPet);
 
                 this.setState({
@@ -94,8 +97,8 @@ export default class FormularioCadastroPet extends Component<Props, State> {
                 <form onSubmit={this.handleSubmit}>
                     <div className="input-group mb-3">
                         <label htmlFor="cpf">CPF do Dono</label>
-                        <input
-                            type="text"
+                        <InputMask
+                            mask="999.999.999-99"
                             className="form-control"
                             placeholder="CPF"
                             aria-label="CPF"
