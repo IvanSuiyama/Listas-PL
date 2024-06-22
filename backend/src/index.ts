@@ -190,26 +190,20 @@ app.put("/alterarClienes", async (req, res) => {
     const { nome, dataEmissao, nomeSocial, cpfNovo } = req.body
 
     try {
-        const verificaCLiene = await clienteService.buscarclienteporCpf(dbName, cpf)
+        
+        const verificaAltera = await clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)
 
-        if (!verificaCLiene) {
-            console.error("Cliente não cadastrado")
-            res.status(404).send("Cliente não enconrado")
+        if (verificaAltera) {
+            console.log("Cliente alterado com sucesso")
+            res.status(200).send("Cliente alterado com sucesso")
         }
 
         else {
-            const verificaAltera = await clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)
+            console.error("Erro ao alterar cliente")
+            res.status(500).send("Erro ao alterar cliente");
 
-            if (verificaAltera) {
-                console.log("Cliente alterado com sucesso")
-                res.status(200).send("Cliente alterado com sucesso")
-            }
-
-            else {
-                console.error("Erro ao alterar cliente")
-                res.status(500).send("Erro ao aterar cliente")
-            }
         }
+
     } catch (error) {
         console.error("Erro ao alterar cliente", error)
         res.status(500).send("Erro ao cadstrar cliente")

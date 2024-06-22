@@ -290,7 +290,7 @@ app.get("/listarServico", function (req, res) { return __awaiter(void 0, void 0,
     });
 }); });
 app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cpf, _a, nome, dataEmissao, nomeSocial, cpfNovo, verificaCLiene, verificaAltera, error_9;
+    var cpf, _a, nome, dataEmissao, nomeSocial, cpfNovo, verificaAltera, error_9;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -298,16 +298,9 @@ app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0
                 _a = req.body, nome = _a.nome, dataEmissao = _a.dataEmissao, nomeSocial = _a.nomeSocial, cpfNovo = _a.cpfNovo;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 6, , 7]);
-                return [4 /*yield*/, clienteService.buscarclienteporCpf(dbName, cpf)];
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)];
             case 2:
-                verificaCLiene = _b.sent();
-                if (!!verificaCLiene) return [3 /*break*/, 3];
-                console.error("Cliente não cadastrado");
-                res.status(404).send("Cliente não enconrado");
-                return [3 /*break*/, 5];
-            case 3: return [4 /*yield*/, clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)];
-            case 4:
                 verificaAltera = _b.sent();
                 if (verificaAltera) {
                     console.log("Cliente alterado com sucesso");
@@ -315,16 +308,15 @@ app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0
                 }
                 else {
                     console.error("Erro ao alterar cliente");
-                    res.status(500).send("Erro ao aterar cliente");
+                    res.status(500).send("Erro ao alterar cliente");
                 }
-                _b.label = 5;
-            case 5: return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 4];
+            case 3:
                 error_9 = _b.sent();
                 console.error("Erro ao alterar cliente", error_9);
                 res.status(500).send("Erro ao cadstrar cliente");
-                return [3 /*break*/, 7];
-            case 7: return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });

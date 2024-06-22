@@ -33,7 +33,7 @@ export default class AlterarCliente extends Component<Props, State> {
             cpfValido: false,
             nome: "",
             nomeSocial: "",
-            dataEmissao: "",
+            dataEmissao: "", // Adicionando a propriedade de dataEmissao ao estado inicial
             cpfNovo: "",
             erroCpfNaoCadastrado: false,
             erroAoAlterarCliente: false
@@ -64,7 +64,7 @@ export default class AlterarCliente extends Component<Props, State> {
                     this.setState({
                         nome: data.nome,
                         nomeSocial: data.nomeSocial,
-                        dataEmissao: data.dataEmissao,
+                        dataEmissao: data.dataEmissao, // Atualizando dataEmissao no estado
                         cpfNovo: data.cpf,
                         erroCpfNaoCadastrado: false,
                         cpfValido: true // Define como válido após encontrar cliente
@@ -113,15 +113,14 @@ export default class AlterarCliente extends Component<Props, State> {
     
         this.setState(typedValue);
     };
-    
 
     handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nome, nomeSocial, dataEmissao, cpf, cpfNovo } = this.state;
-
+    
         const cleanedCpf = cpf.replace(/\D/g, '');
         const cleanedCpfNovo = cpfNovo.replace(/\D/g, '');
-
+    
         try {
             const response = await fetch("http://localhost:5000/alterarClienes", {
                 method: "PUT",
@@ -130,21 +129,27 @@ export default class AlterarCliente extends Component<Props, State> {
                 },
                 body: JSON.stringify({ nome, nomeSocial, dataEmissao, cpf: cleanedCpf, cpfNovo: cleanedCpfNovo })
             });
-
+    
             if (response.ok) {
-                const clienteAtualizado: Cliente = { nome, nomeSocial, dataEmissao, cpf: cleanedCpfNovo };
-                this.props.alterarCliente(clienteAtualizado);
-                alert("Cliente alterado com sucesso!");
-                this.setState({
-                    cpf: "",
-                    cpfValido: false,
-                    nome: "",
-                    nomeSocial: "",
-                    dataEmissao: "",
-                    cpfNovo: "",
-                    erroCpfNaoCadastrado: false,
-                    erroAoAlterarCliente: false // Resetar estado de erro ao alterar cliente
-                });
+                const data = await response.json();
+                if (data === "Cliente alterado com sucesso") {
+                    const clienteAtualizado = { nome, nomeSocial, dataEmissao, cpf: cleanedCpfNovo };
+                    this.props.alterarCliente(clienteAtualizado);
+                    alert("Cliente alterado com sucesso!");
+                    this.setState({
+                        cpf: "",
+                        cpfValido: false,
+                        nome: "",
+                        nomeSocial: "",
+                        dataEmissao: "",
+                        cpfNovo: "",
+                        erroCpfNaoCadastrado: false,
+                        erroAoAlterarCliente: false
+                    });
+                } else {
+                    this.setState({ erroAoAlterarCliente: true });
+                    alert(`Erro ao alterar cliente: ${data}`);
+                }
             } else {
                 const errorText = await response.text();
                 console.error(`Erro ao alterar cliente: ${errorText}`);
@@ -157,7 +162,7 @@ export default class AlterarCliente extends Component<Props, State> {
             alert("Erro ao alterar cliente");
         }
     };
-
+    
     render() {
         const { tema } = this.props;
         const { cpf, cpfValido, nome, nomeSocial, dataEmissao, cpfNovo, erroCpfNaoCadastrado, erroAoAlterarCliente } = this.state;
@@ -222,7 +227,7 @@ export default class AlterarCliente extends Component<Props, State> {
                         <div className="input-group mb-3">
                             <label htmlFor="dataEmissao">Data de Emissão</label>
                             <input
-                                type="text"
+                                type="date"
                                 className="form-control"
                                 placeholder="Data de Emissão"
                                 aria-label="Data de Emissão"
