@@ -81,8 +81,6 @@ app.post("/cadastroCliente", async (req, res) => {
     }
 });
 
-
-
 app.get("/listaPet", async (req, res) => {
     try {
         const pets = await petservices.buscarPet(dbName);
@@ -184,35 +182,32 @@ app.get("/listarServico", async (req, res) => {
         res.status(500).json({ error: 'Erro interno ao obter serviços' });
     }
 });
+app.put("/alterarCliente", async (req, res) => {
+    const { nome, dataEmissao, nomeSocial, cpf, cpfNovo } = req.body;
 
-//dando bo
-app.put("/alterarClienes", async (req, res) => {
-    const { cpf } = req.body
-    const { nome, dataEmissao, nomeSocial, cpfNovo } = req.body
-
-    try {
-
-        const verificaAltera = await clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)
-
-        if (verificaAltera) {
-            console.log("Cliente alterado com sucesso")
-            res.status(200).send("Cliente alterado com sucesso")
-        }
-
-        else {
-            console.error("Erro ao alterar cliente")
-            res.status(500).send("Erro ao alterar cliente");
-
-        }
-
-    } catch (error) {
-        console.error("Erro ao alterar cliente", error)
-        res.status(500).send("Erro ao alterar cliente")
+    if (!nome || !dataEmissao || !nomeSocial || !cpf || !cpfNovo) {
+        res.status(400).json({ error: "Todos os campos são necessários" });
+        return;
     }
 
-})
+    try {
+        const verificaAltera = await clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo);
 
-app.get("/buscarClientePorCpf", async (req: Request, res: Response) => {
+        if (verificaAltera) {
+            console.log("Cliente alterado com sucesso");
+            res.status(200).json({ message: "Cliente alterado com sucesso" });
+        } else {
+            console.error("Erro ao alterar cliente");
+            res.status(500).json({ error: "Erro ao alterar cliente" });
+        }
+    } catch (error) {
+        console.error("Erro ao alterar cliente", error);
+        res.status(500).json({ error: "Erro ao alterar cliente" });
+    }
+});
+
+
+app.get("/buscarclienteporCpf", async (req: Request, res: Response) => {
     const cpf: string = req.query.cpf as string;
 
     if (!cpf) {
@@ -325,6 +320,7 @@ app.post("/excluirPet", async (req: Request, res: Response) => {
         res.status(500).send("Erro ao excluir pet")
     }
 })
+
 app.put("/alterarProduto", async (req: Request, res: Response) => {
     const { id_prod, nome, valor, descricao } = req.body;
 
@@ -352,6 +348,7 @@ app.put("/alterarProduto", async (req: Request, res: Response) => {
         res.status(500).send("Erro ao alterar produto");
     }
 });
+
 app.get("/produtos", async (req, res) => {
     try {
         const produtos = await produtoservices.buscarProduto(dbName);
@@ -362,3 +359,12 @@ app.get("/produtos", async (req, res) => {
         res.status(500).send("Erro ao buscar produtos.");
     }
 });
+
+
+/* app.put("/alterarServico", async (req: Request, res: Response) => {
+    
+});
+
+app.get("/servicos", async (req, res) => {
+
+}) */

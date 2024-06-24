@@ -175,7 +175,7 @@ var Cliente = /** @class */ (function () {
                                     }
                                     else {
                                         console.log("Cliente atualizado com sucesso!");
-                                        resolve(results[0]);
+                                        resolve(results.affectedRows > 0); // Verifique se houve atualização
                                     }
                                 });
                             }

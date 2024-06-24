@@ -289,14 +289,16 @@ app.get("/listarServico", function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); });
-//dando bo
-app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cpf, _a, nome, dataEmissao, nomeSocial, cpfNovo, verificaAltera, error_9;
+app.put("/alterarCliente", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, nome, dataEmissao, nomeSocial, cpf, cpfNovo, verificaAltera, error_9;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                cpf = req.body.cpf;
-                _a = req.body, nome = _a.nome, dataEmissao = _a.dataEmissao, nomeSocial = _a.nomeSocial, cpfNovo = _a.cpfNovo;
+                _a = req.body, nome = _a.nome, dataEmissao = _a.dataEmissao, nomeSocial = _a.nomeSocial, cpf = _a.cpf, cpfNovo = _a.cpfNovo;
+                if (!nome || !dataEmissao || !nomeSocial || !cpf || !cpfNovo) {
+                    res.status(400).json({ error: "Todos os campos são necessários" });
+                    return [2 /*return*/];
+                }
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 3, , 4]);
@@ -305,23 +307,23 @@ app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0
                 verificaAltera = _b.sent();
                 if (verificaAltera) {
                     console.log("Cliente alterado com sucesso");
-                    res.status(200).send("Cliente alterado com sucesso");
+                    res.status(200).json({ message: "Cliente alterado com sucesso" });
                 }
                 else {
                     console.error("Erro ao alterar cliente");
-                    res.status(500).send("Erro ao alterar cliente");
+                    res.status(500).json({ error: "Erro ao alterar cliente" });
                 }
                 return [3 /*break*/, 4];
             case 3:
                 error_9 = _b.sent();
                 console.error("Erro ao alterar cliente", error_9);
-                res.status(500).send("Erro ao alterar cliente");
+                res.status(500).json({ error: "Erro ao alterar cliente" });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); });
-app.get("/buscarClientePorCpf", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+app.get("/buscarclienteporCpf", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var cpf, cliente, error_10;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -541,3 +543,10 @@ app.get("/produtos", function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); });
+/* app.put("/alterarServico", async (req: Request, res: Response) => {
+    
+});
+
+app.get("/servicos", async (req, res) => {
+
+}) */ 

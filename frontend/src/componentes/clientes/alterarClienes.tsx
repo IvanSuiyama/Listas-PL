@@ -55,7 +55,7 @@ export default class AlterarCliente extends Component<Props, State> {
         const cleanedCpf = cpf.replace(/\D/g, '');
 
         try {
-            const response = await fetch(`http://localhost:5000/buscarClientePorCpf?cpf=${cleanedCpf}`);
+            const response = await fetch(`http://localhost:5000/buscarclienteporCpf?cpf=${cleanedCpf}`);
             
             if (response.ok) {
                 const data = await response.json();
@@ -122,7 +122,7 @@ export default class AlterarCliente extends Component<Props, State> {
         const cleanedCpfNovo = cpfNovo.replace(/\D/g, '');
     
         try {
-            const response = await fetch("http://localhost:5000/alterarClienes", {
+            const response = await fetch("http://localhost:5000/alterarCliente", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -132,7 +132,7 @@ export default class AlterarCliente extends Component<Props, State> {
     
             if (response.ok) {
                 const data = await response.json();
-                if (data === "Cliente alterado com sucesso") {
+                if (data.message === "Cliente alterado com sucesso") {
                     const clienteAtualizado = { nome, nomeSocial, dataEmissao, cpf: cleanedCpfNovo };
                     this.props.alterarCliente(clienteAtualizado);
                     alert("Cliente alterado com sucesso!");
@@ -148,7 +148,7 @@ export default class AlterarCliente extends Component<Props, State> {
                     });
                 } else {
                     this.setState({ erroAoAlterarCliente: true });
-                    alert(`Erro ao alterar cliente: ${data}`);
+                    alert(`Erro ao alterar cliente: ${data.error}`);
                 }
             } else {
                 const errorText = await response.text();
@@ -162,6 +162,7 @@ export default class AlterarCliente extends Component<Props, State> {
             alert("Erro ao alterar cliente");
         }
     };
+    
     
     render() {
         const { tema } = this.props;

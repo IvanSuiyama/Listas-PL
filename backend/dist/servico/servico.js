@@ -96,6 +96,62 @@ var Servico = /** @class */ (function () {
             });
         });
     };
+    Servico.prototype.alterarServico = function (dbName, id_servico, nome, descricao, valor) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("\n                        UPDATE servico\n                        SET nome = ?, descricao = ?, valor = ?\n                        WHERE id_serv = ?;\n                        ", [nome, descricao, valor, id_servico], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao atualizar serviço:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Serviço atualizado com sucesso!");
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Servico.prototype.buscarServicoPorId = function (dbName, id_servico) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("SELECT * FROM servico WHERE ide_serv = ?", [id_servico], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar produto:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Produto encontrado: ".concat(JSON.stringify(results[0])));
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
     return Servico;
 }());
 exports.Servico = Servico;

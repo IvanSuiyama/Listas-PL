@@ -106,18 +106,18 @@ export class Cliente {
     async alterarCliente(
         dbName: string,
         nome: string,
-        nomeSocial:string,
-        cpf:string,
-        dt_emissao:string,
-        cpfNovo:string,
+        nomeSocial: string,
+        cpf: string,
+        dt_emissao: string,
+        cpfNovo: string,
     ) {
         return new Promise((resolve, reject) => {
             this.connection.query(`USE ${dbName};`, (useError, _) => {
                 if (useError) {
-                    console.error("Erro ao selecionar o banco de dados:", useError)
-                    reject(useError)
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
                 } else {
-                    console.log("Banco de dados selecionado com sucesso!")
+                    console.log("Banco de dados selecionado com sucesso!");
                     this.connection.query(
                         `
                         UPDATE cliente
@@ -127,17 +127,18 @@ export class Cliente {
                         [nome, nomeSocial, cpfNovo, dt_emissao, cpf],
                         (error, results) => {
                             if (error) {
-                                console.error("Erro ao atualizar cliente:", error)
-                                reject(error)
+                                console.error("Erro ao atualizar cliente:", error);
+                                reject(error);
                             } else {
-                                console.log("Cliente atualizado com sucesso!")
-                                resolve(results[0])
+                                console.log("Cliente atualizado com sucesso!");
+                                resolve(results.affectedRows > 0);  // Verifique se houve atualização
                             }
                         }
-                    )
+                    );
                 }
-            })
-        })
+            });
+        });
     }
+    
 
 }
