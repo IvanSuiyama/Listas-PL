@@ -29,7 +29,7 @@ export class Pet {
         })
     }
 
-    async cadastrarPet(dbName: string, nome: string, raca:string, genero:string, tipo:string, donoCpf:string): Promise<boolean>{
+    async cadastrarPet(dbName: string, nome: string, raca: string, genero: string, tipo: string, donoCpf: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.connection.query(`Use ${dbName};`, (useError, useResults) => {
                 if (useError) {
@@ -49,11 +49,112 @@ export class Pet {
                 }
 
             })
-        }) 
+        })
     }
+
+    async buscarPetPorCpf(dbName: string, cpf: string) {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError)
+                    reject(useError)
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!")
+                    this.connection.query(`SELECT * FROM pet WHERE cpfDoDono = ?`, [cpf], (error, results) => {
+                        if (error) {
+                            console.error("Erro ao buscar pet por CPF:", error)
+                            reject(error)
+                        } else {
+                            resolve(results[0])
+                        }
+                    })
+                }
+            })
+        })
+    }
+
+    async buscarPetPorNome(dbName: string, nomePet: string) {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError)
+                    reject(useError)
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!")
+                    this.connection.query(`SELECT * FROM pet WHERE nomePet = ?`, [nomePet], (error, results) => {
+                        if (error) {
+                            console.error("Erro ao buscar pet por Nome:", error)
+                            reject(error)
+                        } else {
+                            resolve(results[0])
+                        }
+                    })
+                }
+            })
+        })
+    }
+
+    async alterarPet(dbName: string, nome: string, raca: string, genero: string, tipo: string, donoCpf: string, novoNomePet: string) {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError)
+                    reject(useError)
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!")
+                    this.connection.query(
+                        `
+                        UPDATE pet
+                        SET nomePet = ?, raca = ?, genero = ?, tipo = ?
+                        WHERE cpf = ? and nomePet = ?;
+                        `,
+                        [novoNomePet, raca, genero, tipo, donoCpf, nome],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Erro ao atualizar pet:", error)
+                                reject(error)
+                            } else {
+                                console.log("Pet atualizado com sucesso!")
+                                resolve(results[0])
+                            }
+                        }
+                    )
+                }
+            })
+        })
+    }
+
+    async excluirPet(dbName: string, nome: string, cpf: string) {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError)
+                    reject(useError)
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!")
+                    this.connection.query(
+                        `
+                        DELETE from pet where nomePet = ? and cpfDoDono = ?;
+                        `,
+                        [nome, cpf],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Erro ao excluir pet:", error)
+                                reject(error)
+                            } else {
+                                console.log("Pet excluido com sucesso!")
+                                resolve(results[0])
+                            }
+                        }
+                    )
+                }
+            })
+        })
+    }
+
+
 
 }
 
-    
 
-    
+

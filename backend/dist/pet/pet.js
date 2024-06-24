@@ -96,6 +96,116 @@ var Pet = /** @class */ (function () {
             });
         });
     };
+    Pet.prototype.buscarPetPorCpf = function (dbName, cpf) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("SELECT * FROM pet WHERE cpfDoDono = ?", [cpf], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar pet por CPF:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Pet.prototype.buscarPetPorNome = function (dbName, nomePet) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("SELECT * FROM pet WHERE nomePet = ?", [nomePet], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar pet por Nome:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Pet.prototype.alterarPet = function (dbName, nome, raca, genero, tipo, donoCpf, novoNomePet) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("\n                        UPDATE pet\n                        SET nomePet = ?, raca = ?, genero = ?, tipo = ?\n                        WHERE cpf = ? and nomePet = ?;\n                        ", [novoNomePet, raca, genero, tipo, donoCpf, nome], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao atualizar pet:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Pet atualizado com sucesso!");
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Pet.prototype.excluirPet = function (dbName, nome, cpf) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("\n                        DELETE from pet where nomePet = ? and cpfDoDono = ?;\n                        ", [nome, cpf], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao excluir pet:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Pet excluido com sucesso!");
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
     return Pet;
 }());
 exports.Pet = Pet;

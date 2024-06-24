@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 type Props = {
     tema: string;
@@ -43,16 +44,26 @@ export default class ExcluirPet extends Component<Props, State> {
         this.setState({ cpf: event.target.value });
     };
 
-    validarCpf = () => {
+    validarCpf = async () => {
         const { cpf } = this.state;
-        const { clientes } = this.props;
 
-        const cliente = clientes.find(cliente => cliente.cpf === cpf);
-        const cpfValido = !!cliente;
-        this.setState({ cpfValido, nomeDono: cliente ? cliente.nome : "" });
-        if (!cpfValido) {
-            alert("CPF não encontrado!");
-            // Limpar os campos relacionados ao pet
+        try {
+            const response = await axios.get(`/buscarPetPorCpf?cpf=${cpf}`);
+            const cliente = response.data;
+            const cpfValido = !!cliente;
+            this.setState({ cpfValido, nomeDono: cliente ? cliente.nome : "" });
+
+            if (!cpfValido) {
+                alert("CPF não encontrado!");
+                this.setState({
+                    nomePet: "",
+                    petEncontrado: false,
+                    nomeDono: ""
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao buscar CPF", error);
+            alert("Erro ao buscar CPF");
             this.setState({
                 nomePet: "",
                 petEncontrado: false,
@@ -61,36 +72,44 @@ export default class ExcluirPet extends Component<Props, State> {
         }
     };
 
-    buscarPet = () => {
+    buscarPet = async () => {
         const { nomePet } = this.state;
-        const { pets } = this.props;
 
-        const petEncontrado = pets.some(pet => pet.nomePet === nomePet);
-        if (petEncontrado) {
-            this.setState({ petEncontrado: true });
-        } else {
-            alert("Pet não encontrado!");
-            // Limpar os campos relacionados ao pet
-            this.setState({
-                petEncontrado: false
-            });
+        try {
+            const response = await axios.get(`/buscarPetPorNome?nome=${nomePet}`);
+            const pet = response.data;
+            if (pet) {
+                this.setState({ petEncontrado: true });
+            } else {
+                alert("Pet não encontrado!");
+                this.setState({ petEncontrado: false });
+            }
+        } catch (error) {
+            console.error("Erro ao buscar pet", error);
+            alert("Erro ao buscar pet");
+            this.setState({ petEncontrado: false });
         }
     };
 
-    handleExcluirPet = () => {
+    handleExcluirPet = async () => {
         const { nomePet, cpf, nomeDono } = this.state;
         const confirmacao = window.confirm(`Tem certeza que deseja excluir o pet "${nomePet}" do dono "${nomeDono}"?`);
+
         if (confirmacao) {
-            this.props.excluirPet(nomePet, cpf);
-            alert("Pet excluído com sucesso!");
-            // Limpar os campos após a exclusão
-            this.setState({
-                nomePet: "",
-                cpf: "",
-                cpfValido: false,
-                petEncontrado: false,
-                nomeDono: ""
-            });
+            try {
+                await axios.post('/excluirPet', { cpf, nomePet });
+                alert("Pet excluído com sucesso!");
+                this.setState({
+                    nomePet: "",
+                    cpf: "",
+                    cpfValido: false,
+                    petEncontrado: false,
+                    nomeDono: ""
+                });
+            } catch (error) {
+                console.error("Erro ao excluir pet", error);
+                alert("Erro ao excluir pet");
+            }
         }
     };
 
@@ -139,7 +158,7 @@ export default class ExcluirPet extends Component<Props, State> {
                         ) : (
                             <div className="input-group mb-3">
                                 <p>Tem certeza que deseja excluir o pet "{nomePet}" do dono "{this.state.nomeDono}"?</p>
-                                <div className="mb-3"></div> 
+                                <div className="mb-3"></div>
                                 <button className="btn btn-outline-danger" type="button" onClick={this.handleExcluirPet} style={{ background: tema }}>
                                     Excluir Pet
                                 </button>

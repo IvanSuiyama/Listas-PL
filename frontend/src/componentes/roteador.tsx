@@ -5,13 +5,13 @@ import FormularioCadastroCliente from "./clientes/formularioCadastroCliente";
 import FormularioCadastroPet from "./pets/formularioPet";
 import ListaPet from "./pets/listaPet";
 import AlterarCliente from "./clientes/alterarClienes";
-import AlterarPet from "./pets/alterarPet";
+import AlterarPet from "./pets/alterarPet"; // Corrigido o nome da importação
 import ExcluirPet from "./pets/excluirPet";
 import ExcluirCliente from "./clientes/excluirCliente";
 import Home from "./home";
 import FormularioCadastroProduto from "./produtos/cadastroProduto";
 import ListaProduto from "./produtos/listaProduto";
-import AlterarProduto from "./produtos/alteraProduto";
+import AlterarProduto from "./produtos/alteraProduto"; // Corrigido o nome da importação
 import ExcluirProduto from "./produtos/excluirProduto";
 import FormularioCadastroServico from "./servicos/formularioCadastroServico";
 import ListarServico from "./servicos/listarServico";
@@ -19,9 +19,6 @@ import AlterarServico from "./servicos/alterarServico";
 import ExcluirServico from "./servicos/excluirServico";
 import CompraPS from "./compras/compra";
 import ListaCompras from "./compras/mostraCompra";
-
-
-
 
 type Produto = {
     nome: string;
@@ -60,15 +57,13 @@ type Compra = {
     }[];
 };
 
-
-
 type State = {
     tela: string;
     pets: Pet[];
     clientes: Cliente[];
     produtos: Produto[];
     servicos: Servico[];
-    compras: Compra[]; // Adicionando o estado de compras
+    compras: Compra[];
 };
 
 export default class Roteador extends Component<{}, State> {
@@ -80,7 +75,7 @@ export default class Roteador extends Component<{}, State> {
             clientes: [],
             produtos: [],
             servicos: [],
-            compras: [], // Inicializando o estado de compras
+            compras: [],
         };
         this.selecionarView = this.selecionarView.bind(this);
         this.adicionarPet = this.adicionarPet.bind(this);
@@ -218,7 +213,6 @@ export default class Roteador extends Component<{}, State> {
             compras: [...prevState.compras, novaCompra],
         }));
     }
-    
 
     render() {
         const { tela, pets, clientes, produtos, servicos, compras } = this.state;
@@ -234,7 +228,7 @@ export default class Roteador extends Component<{}, State> {
                     { title: "Produtos", items: ["cadastroProduto", "listarProduto", "alterarProduto", "excluirProduto"] },
                     { title: "Serviços", items: ["cadastroServico", "listarServico", "alterarServico", "excluirServico"] },
                     { title: "Compras Serviços", items: ["compra", "mostraCompra"] },
-                    {title: "Registros", items: ["Top10 Quantidade", "Servicos/Produtos mais consumidos", "S/P por tipo raça pet", "Top5 valor"]}
+                    { title: "Registros", items: ["Top10 Quantidade", "Servicos/Produtos mais consumidos", "S/P por tipo raça pet", "Top5 valor"] }
                 ]}
             />
         );

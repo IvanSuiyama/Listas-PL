@@ -185,6 +185,7 @@ app.get("/listarServico", async (req, res) => {
     }
 });
 
+
 app.put("/alterarClienes", async (req, res) => {
     const { cpf } = req.body
     const { nome, dataEmissao, nomeSocial, cpfNovo } = req.body
@@ -206,7 +207,7 @@ app.put("/alterarClienes", async (req, res) => {
 
     } catch (error) {
         console.error("Erro ao alterar cliente", error)
-        res.status(500).send("Erro ao cadstrar cliente")
+        res.status(500).send("Erro ao alterar cliente")
     }
 
 })
@@ -232,3 +233,95 @@ app.get("/buscarClientePorCpf", async (req: Request, res: Response) => {
         res.status(500).send("Erro ao buscar cliente por CPF");
     }
 });
+
+//dando problema
+app.put("/alterarPet", async (req, res) => {
+    const {nomePet, raca, genero, tipo, donoCpf, novoNomePet} = req.body
+
+    try{
+
+        const verificaAlteraPet = await petservices.alterarPet(dbName, nomePet, raca, genero, tipo, donoCpf, novoNomePet)
+
+        if (verificaAlteraPet) {
+            console.log("Pet alterado com sucesso")
+            res.status(200).send("Pet alterado com sucesso")
+        }
+
+        else {
+            console.error("Erro ao alterar pet")
+            res.status(500).send("Erro ao alterar pet");
+
+        }
+
+    } catch (error) {
+        console.error("Erro ao alterar pet", error)
+        res.status(500).send("Erro ao alterar pet")
+    }
+})
+
+
+app.get("/buscarPetPorCpf", async (req: Request, res: Response) => {
+    const cpf: string = req.query.cpf as string;
+
+    if (!cpf) {
+        res.status(400).send("Parâmetro 'cpf' não foi fornecido");
+        return;
+    }
+
+    try {
+        const pet = await petservices.buscarPetPorCpf(dbName, cpf)
+
+        if (!pet) {
+            res.status(404).json(null); 
+        } else {
+            res.status(200).json(pet); 
+        }
+    } catch (error) {
+        console.error("Erro ao buscar pet por CPF", error);
+        res.status(500).send("Erro ao buscar pet por CPF");
+    }
+});
+
+
+app.get("/buscarPetPorNome", async (req: Request, res: Response) => {
+    const nome: string = req.query.nome as string;
+
+    if (!nome) {
+        res.status(400).send("Parâmetro 'nomePet' não foi fornecido");
+        return;
+    }
+
+    try {
+        const pet = await petservices.buscarPetPorNome(dbName, nome)
+
+        if (!pet) {
+            res.status(404).json(null); 
+        } else {
+            res.status(200).json(pet); 
+        }
+    } catch (error) {
+        console.error("Erro ao buscar pet por Nome", error);
+        res.status(500).send("Erro ao buscar pet por Nome");
+    }
+});
+
+app.post("/excluirPet", async(req:Request, res:Response) =>{
+    const {cpf, nomePet} = req.body
+
+    try{
+        const verificaexcluipet = await petservices.excluirPet(dbName, nomePet, cpf)
+
+        if (verificaexcluipet) {
+            console.log("Pet excluido com sucesso")
+            res.status(200).send("Pet excluido com sucesso")
+        }
+
+        else {
+            console.log("Erro ao excluir pet")
+            res.status(500).send("Erro ao excluir pet")
+        }
+    } catch (error) {
+        console.log("Erro ao excluir pet", error)
+        res.status(500).send("Erro ao excluir pet")
+    }
+})

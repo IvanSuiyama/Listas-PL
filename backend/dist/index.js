@@ -289,6 +289,7 @@ app.get("/listarServico", function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); });
+// dando problema
 app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var cpf, _a, nome, dataEmissao, nomeSocial, cpfNovo, verificaAltera, error_9;
     return __generator(this, function (_b) {
@@ -314,7 +315,7 @@ app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0
             case 3:
                 error_9 = _b.sent();
                 console.error("Erro ao alterar cliente", error_9);
-                res.status(500).send("Erro ao cadstrar cliente");
+                res.status(500).send("Erro ao alterar cliente");
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -347,6 +348,131 @@ app.get("/buscarClientePorCpf", function (req, res) { return __awaiter(void 0, v
                 error_10 = _a.sent();
                 console.error("Erro ao buscar cliente por CPF", error_10);
                 res.status(500).send("Erro ao buscar cliente por CPF");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//dando problema
+app.put("/alterarPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, nomePet, raca, genero, tipo, donoCpf, novoNomePet, verificaAlteraPet, error_11;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, nomePet = _a.nomePet, raca = _a.raca, genero = _a.genero, tipo = _a.tipo, donoCpf = _a.donoCpf, novoNomePet = _a.novoNomePet;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, petservices.alterarPet(dbName, nomePet, raca, genero, tipo, donoCpf, novoNomePet)];
+            case 2:
+                verificaAlteraPet = _b.sent();
+                if (verificaAlteraPet) {
+                    console.log("Pet alterado com sucesso");
+                    res.status(200).send("Pet alterado com sucesso");
+                }
+                else {
+                    console.error("Erro ao alterar pet");
+                    res.status(500).send("Erro ao alterar pet");
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_11 = _b.sent();
+                console.error("Erro ao alterar pet", error_11);
+                res.status(500).send("Erro ao alterar pet");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/buscarPetPorCpf", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, pet, error_12;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cpf = req.query.cpf;
+                if (!cpf) {
+                    res.status(400).send("Parâmetro 'cpf' não foi fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, petservices.buscarPetPorCpf(dbName, cpf)];
+            case 2:
+                pet = _a.sent();
+                if (!pet) {
+                    res.status(404).json(null);
+                }
+                else {
+                    res.status(200).json(pet);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_12 = _a.sent();
+                console.error("Erro ao buscar pet por CPF", error_12);
+                res.status(500).send("Erro ao buscar pet por CPF");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/buscarPetPorNome", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var nome, pet, error_13;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                nome = req.query.nome;
+                if (!nome) {
+                    res.status(400).send("Parâmetro 'nomePet' não foi fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, petservices.buscarPetPorNome(dbName, nome)];
+            case 2:
+                pet = _a.sent();
+                if (!pet) {
+                    res.status(404).json(null);
+                }
+                else {
+                    res.status(200).json(pet);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_13 = _a.sent();
+                console.error("Erro ao buscar pet por Nome", error_13);
+                res.status(500).send("Erro ao buscar pet por Nome");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, cpf, nomePet, verificaexcluipet, error_14;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, cpf = _a.cpf, nomePet = _a.nomePet;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, petservices.excluirPet(dbName, nomePet, cpf)];
+            case 2:
+                verificaexcluipet = _b.sent();
+                if (verificaexcluipet) {
+                    console.log("Pet excluido com sucesso");
+                    res.status(200).send("Pet excluido com sucesso");
+                }
+                else {
+                    console.log("Erro ao excluir pet");
+                    res.status(500).send("Erro ao excluir pet");
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_14 = _b.sent();
+                console.log("Erro ao excluir pet", error_14);
+                res.status(500).send("Erro ao excluir pet");
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
