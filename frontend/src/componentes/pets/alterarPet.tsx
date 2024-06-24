@@ -6,7 +6,6 @@ type Props = {
     tema: string;
     alterarPet: (petAtualizado: Pet) => void;
     clientes: Cliente[];
-    pets: Pet[];
 };
 
 type Cliente = {
@@ -59,14 +58,14 @@ export default class AlterarPet extends Component<Props, State> {
     }
 
     handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = event.target;
-  
-      this.setState(prevState => ({
-          ...prevState,
-          [name]: value,
-      } as Pick<State, keyof State>));
-  };
-  
+        const { name, value } = event.target;
+    
+        this.setState({
+            ...this.state, // Mantém o estado atual
+            [name]: value,
+        });
+    };
+    
 
     handleCpfVerify = async () => {
         const { cpf } = this.state;
@@ -111,56 +110,69 @@ export default class AlterarPet extends Component<Props, State> {
     };
 
     handlePetSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const { pets } = this.state;
-      const petIndex = event.target.selectedIndex - 1;
-  
-      if (petIndex >= 0 && pets.length > 0) {
-          const petSelecionado = pets[petIndex];
-          this.setState({
-              petSelecionado: {
-                  ...petSelecionado,
-              },
-              nomePet: petSelecionado.nomePet,
-              raca: petSelecionado.raca,
-              genero: petSelecionado.genero,
-              tipo: petSelecionado.tipo,
-          });
-      } else {
-          this.setState({
-              petSelecionado: null,
-              ...initialPetState,
-          });
-      }
-  };
-  
+        const { pets } = this.state;
+        const petIndex = event.target.selectedIndex - 1;
+    
+        if (petIndex >= 0 && pets.length > 0) {
+            const petSelecionado = pets[petIndex];
+            this.setState({
+                petSelecionado,
+                nomePet: petSelecionado.nomePet,
+                raca: petSelecionado.raca,
+                genero: petSelecionado.genero,
+                tipo: petSelecionado.tipo,
+            });
+        } else {
+            this.setState({
+                petSelecionado: null,
+                nomePet: '',
+                raca: '',
+                genero: '',
+                tipo: '',
+            });
+        }
+    };
 
-  handlePetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    this.setState(prevState => ({
-        petSelecionado: {
-            ...prevState.petSelecionado!,
-            [name]: value,
-        },
-    }));
-};
+    handlePetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+
+        this.setState(prevState => {
+            if (prevState.petSelecionado) {
+                const updatedPet = {
+                    ...prevState.petSelecionado,
+                    [name]: value,
+                };
+
+                return {
+                    ...prevState,
+                    petSelecionado: updatedPet,
+                };
+            } else {
+                return {
+                    ...prevState,
+                    [name]: value,
+                };
+            }
+        });
+    };
 
     handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nomePet, raca, genero, tipo, cpf, petSelecionado } = this.state;
-
+    
         try {
             const response = await axios.put('http://localhost:5000/alterarPet', {
-                nomePet,
+                nomePet: petSelecionado!.nomePet, // Nome antigo do pet
                 raca,
                 genero,
                 tipo,
-                donoCpf: cpf,
-                novoNomePet: petSelecionado!.nomePet,
+                cpf,
+                novoNomePet: nomePet, // Novo nome do pet a ser alterado
             });
-
+    
             if (response.status === 200) {
                 this.props.alterarPet(petSelecionado!);
-
+    
                 this.setState({
                     ...initialPetState,
                     mensagem: 'Pet alterado com sucesso!',
@@ -174,9 +186,10 @@ export default class AlterarPet extends Component<Props, State> {
             this.setState({ mensagem: 'Erro ao alterar pet.', erro: true });
         }
     };
+    
 
     render() {
-        const { tema, clientes } = this.props;
+        const { tema } = this.props;
         const { cpf, pets, petsLoaded, petSelecionado, nomePet, raca, genero, tipo, mensagem, erro } = this.state;
 
         return (

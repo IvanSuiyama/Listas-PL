@@ -106,7 +106,7 @@ export class Pet {
                         `
                         UPDATE pet
                         SET nomePet = ?, raca = ?, genero = ?, tipo = ?
-                        WHERE cpf = ? and nomePet = ?;
+                        WHERE cpfDoDono = ? and nomePet = ?;
                         `,
                         [novoNomePet, raca, genero, tipo, donoCpf, nome],
                         (error, results) => {
@@ -124,33 +124,37 @@ export class Pet {
         })
     }
 
-    async excluirPet(dbName: string, nome: string, cpf: string) {
+    async excluirPet(dbName:string, nomePet:string, cpf:string) {
         return new Promise((resolve, reject) => {
             this.connection.query(`USE ${dbName};`, (useError, _) => {
                 if (useError) {
-                    console.error("Erro ao selecionar o banco de dados:", useError)
-                    reject(useError)
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
                 } else {
-                    console.log("Banco de dados selecionado com sucesso!")
+                    console.log("Banco de dados selecionado com sucesso!");
                     this.connection.query(
-                        `
-                        DELETE from pet where nomePet = ? and cpfDoDono = ?;
-                        `,
-                        [nome, cpf],
+                        `DELETE FROM pet WHERE nomePet = ? AND cpfDoDono = ?;`,
+                        [nomePet, cpf],
                         (error, results) => {
                             if (error) {
-                                console.error("Erro ao excluir pet:", error)
-                                reject(error)
+                                console.error("Erro ao excluir pet:", error);
+                                reject(error);
                             } else {
-                                console.log("Pet excluido com sucesso!")
-                                resolve(results[0])
+                                if (results.affectedRows > 0) {
+                                    console.log("Pet excluído com sucesso!");
+                                    resolve(true); // Exclusão bem-sucedida
+                                } else {
+                                    console.log("Pet não encontrado ou não pôde ser excluído.");
+                                    resolve(false); // Nenhum pet foi excluído (não encontrado)
+                                }
                             }
                         }
-                    )
+                    );
                 }
-            })
-        })
+            });
+        });
     }
+    
 
 
 

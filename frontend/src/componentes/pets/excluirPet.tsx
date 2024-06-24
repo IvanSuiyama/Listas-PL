@@ -1,31 +1,34 @@
-import React, { Component } from "react";
+import React, { Component, ChangeEvent } from "react";
 import axios from "axios";
 import InputMask from 'react-input-mask';
 
-type Props = {
+interface Props {
     tema: string;
-    excluirPet: (nomePet: string, cpf: string) => void;
-    clientes: Array<{ cpf: string; nome: string }>;
-    pets: Pet[];
-};
+    excluirPet(nomePet:string, cpf:string): any
+}
 
-type Pet = {
+interface Cliente {
+    cpf: string;
+    nome: string;
+}
+
+interface Pet {
+    id_pet: number;
     nomePet: string;
     raca: string;
     genero: string;
     tipo: string;
     donoCpf: string;
-};
+}
 
-type State = {
+interface State {
     cpf: string;
     pets: Pet[];
     petsLoaded: boolean;
     petSelecionado: Pet | null;
-    nomeDono: string;
     mensagem: string;
     erro: boolean;
-};
+}
 
 export default class ExcluirPet extends Component<Props, State> {
     constructor(props: Props) {
@@ -35,7 +38,6 @@ export default class ExcluirPet extends Component<Props, State> {
             pets: [],
             petsLoaded: false,
             petSelecionado: null,
-            nomeDono: '',
             mensagem: '',
             erro: false,
         };
@@ -43,22 +45,22 @@ export default class ExcluirPet extends Component<Props, State> {
 
     handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        this.setState(prevState => ({
-            ...prevState,
+        this.setState({
+            ...this.state,
             [name]: value,
-        } as Pick<State, keyof State>));
+        } as Pick<State, keyof State>);
     };
 
     handleCpfVerify = async () => {
         const { cpf } = this.state;
         const cpfSemMascara = cpf.replace(/[^\d]/g, '');
 
-        console.log(`Verificando CPF: ${cpfSemMascara}`); // Log de depuração
+        console.log(`Verificando CPF: ${cpfSemMascara}`);
 
         try {
             const response = await axios.get(`http://localhost:5000/buscarPetPorCpf?cpf=${cpfSemMascara}`);
 
-            console.log(`Resposta do servidor: `, response.data); // Log de depuração
+            console.log(`Resposta do servidor: `, response.data);
 
             if (response.status === 200) {
                 const data = response.data;
@@ -106,7 +108,7 @@ export default class ExcluirPet extends Component<Props, State> {
         }
     };
 
-    handlePetSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    handlePetSelect = (event: ChangeEvent<HTMLSelectElement>) => {
         const { pets } = this.state;
         const petIndex = event.target.selectedIndex - 1;
 
@@ -130,32 +132,42 @@ export default class ExcluirPet extends Component<Props, State> {
             return;
         }
     
-        const confirmacao = window.confirm(`Tem certeza que deseja excluir o pet "${petSelecionado.nomePet}"?`);
+        const cpfSemMascara = cpf.replace(/[^\d]/g, '');
     
-        if (confirmacao) {
-            try {
-                await axios.post('http://localhost:5000/excluirPet', { cpf, nomePet: petSelecionado.nomePet });
+        try {
+            // Realizar a exclusão no backend
+            const response = await axios.post('http://localhost:5000/excluirPet', { cpf: cpfSemMascara, nomePet: petSelecionado.nomePet });
+    
+            if (response.data.success) { // Verificar se o campo success é true
+                // Exclusão bem-sucedida
                 alert("Pet excluído com sucesso!");
+    
+                // Atualizar a lista local de pets após a exclusão
+                const updatedPets = this.state.pets.filter(pet => pet.id_pet !== petSelecionado.id_pet);
+    
                 this.setState({
                     cpf: '',
-                    pets: [],
-                    petsLoaded: false,
+                    pets: updatedPets,
+                    petsLoaded: true, // Se necessário, atualizar o estado petsLoaded
                     petSelecionado: null,
                     mensagem: '',
                     erro: false,
                 });
-            } catch (error) {
-                console.error("Erro ao excluir pet", error);
-               
+            } else {
+                console.error("Erro ao excluir pet");
+                alert("Erro ao excluir pet. Verifique o console para mais detalhes.");
             }
+        } catch (error) {
+            console.error("Erro ao excluir pet", error);
+            alert("Erro ao excluir pet. Verifique o console para mais detalhes.");
+            // Tratar erro de forma adequada conforme necessário
         }
     };
-
     render() {
         const { tema } = this.props;
         const { cpf, pets, petsLoaded, petSelecionado, mensagem, erro } = this.state;
 
-        console.log(`Renderizando componente. petsLoaded: ${petsLoaded}, pets: ${Array.isArray(pets) ? pets.length : 'undefined'}`); // Log de depuração
+        console.log(`Renderizando componente. petsLoaded: ${petsLoaded}, pets: ${Array.isArray(pets) ? pets.length : 'undefined'}`);
 
         return (
             <div className="container-fluid">

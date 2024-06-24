@@ -4,7 +4,7 @@ import ListaCliente from "./clientes/listaClientes";
 import FormularioCadastroCliente from "./clientes/formularioCadastroCliente";
 import FormularioCadastroPet from "./pets/formularioPet";
 import ListaPet from "./pets/listaPet";
-import AlterarCliente from "./clientes/alterarClienes";
+import AlterarCliente from "./clientes/alterarClienes"; // Corrigido o nome da importação
 import AlterarPet from "./pets/alterarPet"; // Corrigido o nome da importação
 import ExcluirPet from "./pets/excluirPet";
 import ExcluirCliente from "./clientes/excluirCliente";
@@ -257,15 +257,15 @@ export default class Roteador extends Component<{}, State> {
                 ) : tela === "listaPet" ? (
                     <ListaPet />
                 ) : tela === "alterarPet" ? (
-                    <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} pets={pets} />
+                    <AlterarPet tema="#e3f2fd" alterarPet={this.alterarPet} clientes={clientes} />
                 ) : tela === "excluirPet" ? (
-                    <ExcluirPet tema="#e3f2fd" excluirPet={this.excluirPet} clientes={clientes} pets={pets} />
+                    <ExcluirPet tema="#e3f2fd" excluirPet={this.excluirPet} />
                 ) : tela === "cadastroProduto" ? (
                     <FormularioCadastroProduto tema="#e3f2fd" adicionarProduto={this.adicionarProduto} />
                 ) : tela === "listarProduto" ? (
                     <ListaProduto produtos={produtos} />
                 ) : tela === "alterarProduto" ? (
-                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto} />
+                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto}  />
                 ) : tela === "excluirProduto" ? (
                     <ExcluirProduto tema="#e3f2fd" excluirProduto={this.excluirProduto} produtos={produtos} />
                 ) : tela === "cadastroServico" ? (
@@ -288,6 +288,5 @@ export default class Roteador extends Component<{}, State> {
                 ) : null}
             </>
         );
-        
     }
 }

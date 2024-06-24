@@ -355,17 +355,17 @@ app.get("/buscarclienteporCpf", function (req, res) { return __awaiter(void 0, v
         }
     });
 }); });
-//dando problema
+// dando bo
 app.put("/alterarPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, nomePet, raca, genero, tipo, donoCpf, novoNomePet, verificaAlteraPet, error_11;
+    var _a, nomePet, raca, genero, tipo, cpf, novoNomePet, verificaAlteraPet, error_11;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _a = req.body, nomePet = _a.nomePet, raca = _a.raca, genero = _a.genero, tipo = _a.tipo, donoCpf = _a.donoCpf, novoNomePet = _a.novoNomePet;
+                _a = req.body, nomePet = _a.nomePet, raca = _a.raca, genero = _a.genero, tipo = _a.tipo, cpf = _a.cpf, novoNomePet = _a.novoNomePet;
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, petservices.alterarPet(dbName, nomePet, raca, genero, tipo, donoCpf, novoNomePet)];
+                return [4 /*yield*/, petservices.alterarPet(dbName, nomePet, raca, genero, tipo, cpf, novoNomePet)];
             case 2:
                 verificaAlteraPet = _b.sent();
                 if (verificaAlteraPet) {
@@ -450,9 +450,8 @@ app.get("/buscarPetPorNome", function (req, res) { return __awaiter(void 0, void
         }
     });
 }); });
-//dando bo
 app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, cpf, nomePet, verificaexcluipet, error_14;
+    var _a, cpf, nomePet, resultado, error_14;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -462,20 +461,20 @@ app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, v
                 _b.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, petservices.excluirPet(dbName, nomePet, cpf)];
             case 2:
-                verificaexcluipet = _b.sent();
-                if (verificaexcluipet) {
-                    console.log("Pet excluido com sucesso");
-                    res.status(200).send("Pet excluido com sucesso");
+                resultado = _b.sent();
+                if (resultado) {
+                    console.log('Pet excluído com sucesso');
+                    res.status(200).json({ success: true });
                 }
                 else {
-                    console.log("Erro ao excluir pet");
-                    res.status(500).send("Erro ao excluir pet");
+                    console.log('Erro ao excluir pet');
+                    res.status(500).json({ success: false, message: 'Erro ao excluir pet' });
                 }
                 return [3 /*break*/, 4];
             case 3:
                 error_14 = _b.sent();
-                console.log("Erro ao excluir pet", error_14);
-                res.status(500).send("Erro ao excluir pet");
+                console.error('Erro ao excluir pet', error_14);
+                res.status(500).json({ success: false, message: 'Erro ao excluir pet' });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }

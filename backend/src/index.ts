@@ -182,6 +182,7 @@ app.get("/listarServico", async (req, res) => {
         res.status(500).json({ error: 'Erro interno ao obter serviços' });
     }
 });
+
 app.put("/alterarCliente", async (req, res) => {
     const { nome, dataEmissao, nomeSocial, cpf, cpfNovo } = req.body;
 
@@ -206,7 +207,6 @@ app.put("/alterarCliente", async (req, res) => {
     }
 });
 
-
 app.get("/buscarclienteporCpf", async (req: Request, res: Response) => {
     const cpf: string = req.query.cpf as string;
 
@@ -229,30 +229,26 @@ app.get("/buscarclienteporCpf", async (req: Request, res: Response) => {
     }
 });
 
-//dando problema
+// dando bo
 app.put("/alterarPet", async (req, res) => {
-    const { nomePet, raca, genero, tipo, donoCpf, novoNomePet } = req.body
+    const { nomePet, raca, genero, tipo, cpf, novoNomePet } = req.body;
 
     try {
-
-        const verificaAlteraPet = await petservices.alterarPet(dbName, nomePet, raca, genero, tipo, donoCpf, novoNomePet)
+        const verificaAlteraPet = await petservices.alterarPet(dbName, nomePet, raca, genero, tipo, cpf, novoNomePet);
 
         if (verificaAlteraPet) {
-            console.log("Pet alterado com sucesso")
-            res.status(200).send("Pet alterado com sucesso")
-        }
-
-        else {
-            console.error("Erro ao alterar pet")
+            console.log("Pet alterado com sucesso");
+            res.status(200).send("Pet alterado com sucesso");
+        } else {
+            console.error("Erro ao alterar pet");
             res.status(500).send("Erro ao alterar pet");
-
         }
-
     } catch (error) {
-        console.error("Erro ao alterar pet", error)
-        res.status(500).send("Erro ao alterar pet")
+        console.error("Erro ao alterar pet", error);
+        res.status(500).send("Erro ao alterar pet");
     }
-})
+});
+
 
 
 app.get("/buscarPetPorCpf", async (req: Request, res: Response) => {
@@ -299,27 +295,26 @@ app.get("/buscarPetPorNome", async (req: Request, res: Response) => {
         res.status(500).send("Erro ao buscar pet por Nome");
     }
 });
-//dando bo
-app.post("/excluirPet", async (req: Request, res: Response) => {
-    const { cpf, nomePet } = req.body
+
+app.post("/excluirPet", async (req, res) => {
+    const { cpf, nomePet } = req.body;
 
     try {
-        const verificaexcluipet = await petservices.excluirPet(dbName, nomePet, cpf)
+        // Lógica para excluir o pet no banco de dados
+        const resultado = await petservices.excluirPet(dbName, nomePet, cpf);
 
-        if (verificaexcluipet) {
-            console.log("Pet excluido com sucesso")
-            res.status(200).send("Pet excluido com sucesso")
-        }
-
-        else {
-            console.log("Erro ao excluir pet")
-            res.status(500).send("Erro ao excluir pet")
+        if (resultado) {
+            console.log('Pet excluído com sucesso');
+            res.status(200).json({ success: true });
+        } else {
+            console.log('Erro ao excluir pet');
+            res.status(500).json({ success: false, message: 'Erro ao excluir pet' });
         }
     } catch (error) {
-        console.log("Erro ao excluir pet", error)
-        res.status(500).send("Erro ao excluir pet")
+        console.error('Erro ao excluir pet', error);
+        res.status(500).json({ success: false, message: 'Erro ao excluir pet' });
     }
-})
+});
 
 app.put("/alterarProduto", async (req: Request, res: Response) => {
     const { id_prod, nome, valor, descricao } = req.body;

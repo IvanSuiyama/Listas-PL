@@ -162,7 +162,7 @@ var Pet = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("\n                        UPDATE pet\n                        SET nomePet = ?, raca = ?, genero = ?, tipo = ?\n                        WHERE cpf = ? and nomePet = ?;\n                        ", [novoNomePet, raca, genero, tipo, donoCpf, nome], function (error, results) {
+                                _this.connection.query("\n                        UPDATE pet\n                        SET nomePet = ?, raca = ?, genero = ?, tipo = ?\n                        WHERE cpfDoDono = ? and nomePet = ?;\n                        ", [novoNomePet, raca, genero, tipo, donoCpf, nome], function (error, results) {
                                     if (error) {
                                         console.error("Erro ao atualizar pet:", error);
                                         reject(error);
@@ -178,7 +178,7 @@ var Pet = /** @class */ (function () {
             });
         });
     };
-    Pet.prototype.excluirPet = function (dbName, nome, cpf) {
+    Pet.prototype.excluirPet = function (dbName, nomePet, cpf) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -190,14 +190,20 @@ var Pet = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("\n                        DELETE from pet where nomePet = ? and cpfDoDono = ?;\n                        ", [nome, cpf], function (error, results) {
+                                _this.connection.query("DELETE FROM pet WHERE nomePet = ? AND cpfDoDono = ?;", [nomePet, cpf], function (error, results) {
                                     if (error) {
                                         console.error("Erro ao excluir pet:", error);
                                         reject(error);
                                     }
                                     else {
-                                        console.log("Pet excluido com sucesso!");
-                                        resolve(results[0]);
+                                        if (results.affectedRows > 0) {
+                                            console.log("Pet excluído com sucesso!");
+                                            resolve(true); // Exclusão bem-sucedida
+                                        }
+                                        else {
+                                            console.log("Pet não encontrado ou não pôde ser excluído.");
+                                            resolve(false); // Nenhum pet foi excluído (não encontrado)
+                                        }
                                     }
                                 });
                             }
