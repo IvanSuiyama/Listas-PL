@@ -185,13 +185,13 @@ app.get("/listarServico", async (req, res) => {
     }
 });
 
-
+//dando bo
 app.put("/alterarClienes", async (req, res) => {
     const { cpf } = req.body
     const { nome, dataEmissao, nomeSocial, cpfNovo } = req.body
 
     try {
-        
+
         const verificaAltera = await clienteService.alterarCliente(dbName, nome, nomeSocial, cpf, dataEmissao, cpfNovo)
 
         if (verificaAltera) {
@@ -236,9 +236,9 @@ app.get("/buscarClientePorCpf", async (req: Request, res: Response) => {
 
 //dando problema
 app.put("/alterarPet", async (req, res) => {
-    const {nomePet, raca, genero, tipo, donoCpf, novoNomePet} = req.body
+    const { nomePet, raca, genero, tipo, donoCpf, novoNomePet } = req.body
 
-    try{
+    try {
 
         const verificaAlteraPet = await petservices.alterarPet(dbName, nomePet, raca, genero, tipo, donoCpf, novoNomePet)
 
@@ -272,9 +272,9 @@ app.get("/buscarPetPorCpf", async (req: Request, res: Response) => {
         const pet = await petservices.buscarPetPorCpf(dbName, cpf)
 
         if (!pet) {
-            res.status(404).json(null); 
+            res.status(404).json(null);
         } else {
-            res.status(200).json(pet); 
+            res.status(200).json(pet);
         }
     } catch (error) {
         console.error("Erro ao buscar pet por CPF", error);
@@ -295,20 +295,20 @@ app.get("/buscarPetPorNome", async (req: Request, res: Response) => {
         const pet = await petservices.buscarPetPorNome(dbName, nome)
 
         if (!pet) {
-            res.status(404).json(null); 
+            res.status(404).json(null);
         } else {
-            res.status(200).json(pet); 
+            res.status(200).json(pet);
         }
     } catch (error) {
         console.error("Erro ao buscar pet por Nome", error);
         res.status(500).send("Erro ao buscar pet por Nome");
     }
 });
+//dando bo
+app.post("/excluirPet", async (req: Request, res: Response) => {
+    const { cpf, nomePet } = req.body
 
-app.post("/excluirPet", async(req:Request, res:Response) =>{
-    const {cpf, nomePet} = req.body
-
-    try{
+    try {
         const verificaexcluipet = await petservices.excluirPet(dbName, nomePet, cpf)
 
         if (verificaexcluipet) {
@@ -325,3 +325,40 @@ app.post("/excluirPet", async(req:Request, res:Response) =>{
         res.status(500).send("Erro ao excluir pet")
     }
 })
+app.put("/alterarProduto", async (req: Request, res: Response) => {
+    const { id_prod, nome, valor, descricao } = req.body;
+
+    try {
+        console.log(`Recebido para alteração - ID: ${id_prod}, Nome: ${nome}, Valor: ${valor}, Descrição: ${descricao}`);
+        const produtook = await produtoservices.buscarProdutoPorId(dbName, id_prod);
+
+        if (produtook) {
+            console.log(`Produto encontrado: ${JSON.stringify(produtook)}`);
+            const alteraProduto = await produtoservices.alterarProduto(dbName, id_prod, nome, descricao, valor);
+
+            if (alteraProduto) {
+                console.log("Produto alterado com sucesso");
+                res.status(200).send("Produto alterado com sucesso");
+            } else {
+                console.error("Erro ao alterar Produto");
+                res.status(500).send("Erro ao alterar produto");
+            }
+        } else {
+            console.log("Produto não encontrado");
+            res.status(404).send("Produto não encontrado");
+        }
+    } catch (error) {
+        console.error("Erro ao alterar Produto", error);
+        res.status(500).send("Erro ao alterar produto");
+    }
+});
+app.get("/produtos", async (req, res) => {
+    try {
+        const produtos = await produtoservices.buscarProduto(dbName);
+        console.log("Produtos retornados do banco de dados:", produtos); // Log dos produtos retornados
+        res.json(produtos);
+    } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+        res.status(500).send("Erro ao buscar produtos.");
+    }
+});

@@ -289,7 +289,7 @@ app.get("/listarServico", function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); });
-// dando problema
+//dando bo
 app.put("/alterarClienes", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var cpf, _a, nome, dataEmissao, nomeSocial, cpfNovo, verificaAltera, error_9;
     return __generator(this, function (_b) {
@@ -448,6 +448,7 @@ app.get("/buscarPetPorNome", function (req, res) { return __awaiter(void 0, void
         }
     });
 }); });
+//dando bo
 app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, cpf, nomePet, verificaexcluipet, error_14;
     return __generator(this, function (_b) {
@@ -475,6 +476,68 @@ app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, v
                 res.status(500).send("Erro ao excluir pet");
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.put("/alterarProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, id_prod, nome, valor, descricao, produtook, alteraProduto, error_15;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, id_prod = _a.id_prod, nome = _a.nome, valor = _a.valor, descricao = _a.descricao;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 6, , 7]);
+                console.log("Recebido para altera\u00E7\u00E3o - ID: ".concat(id_prod, ", Nome: ").concat(nome, ", Valor: ").concat(valor, ", Descri\u00E7\u00E3o: ").concat(descricao));
+                return [4 /*yield*/, produtoservices.buscarProdutoPorId(dbName, id_prod)];
+            case 2:
+                produtook = _b.sent();
+                if (!produtook) return [3 /*break*/, 4];
+                console.log("Produto encontrado: ".concat(JSON.stringify(produtook)));
+                return [4 /*yield*/, produtoservices.alterarProduto(dbName, id_prod, nome, descricao, valor)];
+            case 3:
+                alteraProduto = _b.sent();
+                if (alteraProduto) {
+                    console.log("Produto alterado com sucesso");
+                    res.status(200).send("Produto alterado com sucesso");
+                }
+                else {
+                    console.error("Erro ao alterar Produto");
+                    res.status(500).send("Erro ao alterar produto");
+                }
+                return [3 /*break*/, 5];
+            case 4:
+                console.log("Produto não encontrado");
+                res.status(404).send("Produto não encontrado");
+                _b.label = 5;
+            case 5: return [3 /*break*/, 7];
+            case 6:
+                error_15 = _b.sent();
+                console.error("Erro ao alterar Produto", error_15);
+                res.status(500).send("Erro ao alterar produto");
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/produtos", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var produtos, error_16;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, produtoservices.buscarProduto(dbName)];
+            case 1:
+                produtos = _a.sent();
+                console.log("Produtos retornados do banco de dados:", produtos); // Log dos produtos retornados
+                res.json(produtos);
+                return [3 /*break*/, 3];
+            case 2:
+                error_16 = _a.sent();
+                console.error("Erro ao buscar produtos:", error_16);
+                res.status(500).send("Erro ao buscar produtos.");
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

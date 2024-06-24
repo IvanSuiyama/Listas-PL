@@ -96,6 +96,62 @@ var Produto = /** @class */ (function () {
             });
         });
     };
+    Produto.prototype.alterarProduto = function (dbName, id_produto, nome, descricao, valor) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("\n                        UPDATE produto\n                        SET nome = ?, descricao = ?, valor = ?\n                        WHERE id_prod = ?;\n                        ", [nome, descricao, valor, id_produto], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao atualizar produto:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Produto atualizado com sucesso!");
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Produto.prototype.buscarProdutoPorId = function (dbName, id_produto) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("SELECT * FROM produto WHERE id_prod = ?", [id_produto], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar produto:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Produto encontrado: ".concat(JSON.stringify(results[0])));
+                                        resolve(results[0]);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
     return Produto;
 }());
 exports.Produto = Produto;

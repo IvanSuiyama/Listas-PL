@@ -74,11 +74,7 @@ export function createDatabaseAndTables() {
             id_prod INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(255),
             descricao TEXT,
-            valor DECIMAL(10, 2),
-            cpf_dono VARCHAR(14),
-            id_pet INT,
-            FOREIGN KEY (cpf_dono) REFERENCES cliente(cpf),
-            FOREIGN KEY (id_pet) REFERENCES pet(id_pet)
+            valor DECIMAL(10, 2)
           )
         `;
 
@@ -92,11 +88,7 @@ export function createDatabaseAndTables() {
             id_serv INT AUTO_INCREMENT PRIMARY KEY,
             nome VARCHAR(255),
             descricao TEXT,
-            valor DECIMAL(10, 2),
-            cpf_dono VARCHAR(14),
-            id_pet INT,
-            FOREIGN KEY (cpf_dono) REFERENCES cliente(cpf),
-            FOREIGN KEY (id_pet) REFERENCES pet(id_pet)
+            valor DECIMAL(10, 2)
           )
         `;
 

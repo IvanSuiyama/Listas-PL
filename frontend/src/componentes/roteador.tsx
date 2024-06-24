@@ -265,7 +265,7 @@ export default class Roteador extends Component<{}, State> {
                 ) : tela === "listarProduto" ? (
                     <ListaProduto produtos={produtos} />
                 ) : tela === "alterarProduto" ? (
-                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto} produtos={produtos} />
+                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto} />
                 ) : tela === "excluirProduto" ? (
                     <ExcluirProduto tema="#e3f2fd" excluirProduto={this.excluirProduto} produtos={produtos} />
                 ) : tela === "cadastroServico" ? (

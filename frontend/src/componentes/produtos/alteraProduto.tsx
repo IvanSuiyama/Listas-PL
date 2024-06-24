@@ -1,12 +1,12 @@
-import React, { Component } from "react";
+import React, { Component, FormEvent, ChangeEvent } from "react";
 
 type Props = {
     tema: string;
     alterarProduto: (produtoAtualizado: Produto) => void;
-    produtos: Produto[];
 };
 
 type Produto = {
+    id_prod: number; // Alterado de string para number
     nome: string;
     descricao: string;
     valor: number;
@@ -17,6 +17,7 @@ type State = {
     descricao: string;
     valor: string;
     produtoSelecionado: string;
+    produtos: Produto[];
 };
 
 export default class AlterarProduto extends Component<Props, State> {
@@ -27,50 +28,108 @@ export default class AlterarProduto extends Component<Props, State> {
             descricao: "",
             valor: "",
             produtoSelecionado: "",
+            produtos: [],
         };
     }
 
-    handleProdutoChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const nomeProduto = event.target.value;
-        const produtoSelecionado = this.props.produtos.find((produto) => produto.nome === nomeProduto);
+    componentDidMount() {
+        this.fetchProdutos();
+    }
+
+    fetchProdutos = async () => {
+        try {
+            const response = await fetch("http://localhost:5000/produtos");
+            const produtos = await response.json();
+            console.log("Produtos recebidos do backend:", produtos);
+            this.setState({ produtos });
+        } catch (error) {
+            console.error("Erro ao buscar produtos:", error);
+        }
+    };
+
+    handleProdutoChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        const produtoId = parseInt(event.target.value, 10); // Convertendo para número
+        console.log("Produto selecionado ID:", produtoId);
+        const produtoSelecionado = this.state.produtos.find((produto) => produto.id_prod === produtoId);
+
         if (produtoSelecionado) {
+            console.log("Produto selecionado encontrado:", produtoSelecionado);
             this.setState({
                 nome: produtoSelecionado.nome,
                 descricao: produtoSelecionado.descricao,
                 valor: produtoSelecionado.valor.toString(),
-                produtoSelecionado: nomeProduto,
+                produtoSelecionado: produtoSelecionado.id_prod.toString(), // Convertendo para string para manter a consistência no estado
+            });
+        } else {
+            console.log("Produto selecionado não encontrado");
+            this.setState({
+                nome: "",
+                descricao: "",
+                valor: "",
+                produtoSelecionado: "",
             });
         }
     };
 
-    handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
-        this.setState({ [name]: value } as Pick<State, keyof State>);
+        this.setState({ [name]: value } as unknown as Pick<State, keyof State>);
     };
 
-    handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nome, descricao, valor, produtoSelecionado } = this.state;
+
+        if (!produtoSelecionado) {
+            alert("Selecione um produto antes de enviar o formulário!");
+            return;
+        }
+
         const valorNum = parseFloat(valor);
         if (isNaN(valorNum)) {
             alert("Valor do produto inválido!");
             return;
         }
-        const produtoAtualizado: Produto = { nome, descricao, valor: valorNum };
-        this.props.alterarProduto(produtoAtualizado);
-        alert("Produto alterado com sucesso!");
-        // Limpar os campos após a submissão
-        this.setState({
-            nome: "",
-            descricao: "",
-            valor: "",
-            produtoSelecionado: "",
-        });
+
+        try {
+            const response = await fetch("http://localhost:5000/alterarProduto", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id_prod: parseInt(produtoSelecionado, 10), // Convertendo para número antes de enviar
+                    nome,
+                    valor: valorNum,
+                    descricao,
+                }),
+            });
+
+            if (response.ok) {
+                alert("Produto alterado com sucesso!");
+                const produtoAtualizado: Produto = { id_prod: parseInt(produtoSelecionado, 10), nome, descricao, valor: valorNum };
+                this.props.alterarProduto(produtoAtualizado);
+                this.setState({
+                    nome: "",
+                    descricao: "",
+                    valor: "",
+                    produtoSelecionado: "",
+                });
+                this.fetchProdutos();
+            } else {
+                const errorText = await response.text();
+                console.error("Erro ao alterar produto:", errorText);
+                alert("Erro ao alterar o produto: " + errorText);
+            }
+        } catch (error) {
+            console.error("Erro ao fazer requisição:", error);
+            alert("Erro ao alterar o produto. Verifique o console para mais detalhes.");
+        }
     };
 
     render() {
-        const { tema, produtos } = this.props;
-        const { nome, descricao, valor, produtoSelecionado } = this.state;
+        const { tema } = this.props;
+        const { nome, descricao, valor, produtoSelecionado, produtos } = this.state;
 
         return (
             <div className="container-fluid">
@@ -84,9 +143,9 @@ export default class AlterarProduto extends Component<Props, State> {
                             value={produtoSelecionado}
                             onChange={this.handleProdutoChange}
                         >
-                            <option value="">Selecione um Produto</option>
+                            <option key="default" value="">Selecione um Produto</option>
                             {produtos.map((produto) => (
-                                <option key={produto.nome} value={produto.nome}>
+                                <option key={produto.id_prod} value={produto.id_prod}>
                                     {produto.nome}
                                 </option>
                             ))}
