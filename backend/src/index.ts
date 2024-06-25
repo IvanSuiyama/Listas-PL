@@ -677,4 +677,104 @@ app.get('/listarTopClientes', async (req: Request, res: Response) => {
     }
 });
 
+app.get('/listarTopServicos', async (req: Request, res: Response) => {
+    try {
+        const servicosConsumidos: { nomeS: string }[] = await compraservice.buscarServicosConsumidos(dbName);
 
+        // Objeto para armazenar a contagem de serviços
+        const contagemServicos: { [nomeS: string]: number } = {};
+
+        // Contagem de serviços considerando repetições
+        servicosConsumidos.forEach((servico) => {
+            const nomeServico = servico.nomeS;
+            contagemServicos[nomeServico] = contagemServicos[nomeServico] ? contagemServicos[nomeServico] + 1 : 1;
+        });
+
+        // Converter para um array de objetos { nomeS: string, quantidade: number }
+        const topServicos = Object.keys(contagemServicos).map(nomeS => ({
+            nomeS,
+            quantidade: contagemServicos[nomeS]
+        }));
+
+        // Ordenar os top serviços por quantidade (decrescente) e limitar aos top 5
+        topServicos.sort((a, b) => b.quantidade - a.quantidade);
+        const top5Servicos = topServicos.slice(0, 5);
+
+        // Retornar os top 5 serviços mais consumidos
+        res.status(200).json(top5Servicos);
+    } catch (error) {
+        console.error('Erro ao buscar os top serviços:', error);
+        res.status(500).send('Erro ao buscar os top serviços');
+    }
+});
+
+
+app.get('/listarTopProdutos', async (req: Request, res: Response) => {
+    try {
+        const produtosConsumidos = await compraservice.buscarProdutosConsumidos(dbName);
+
+        // Objeto para armazenar a contagem de produtos
+        const contagemProdutos: { [nomeP: string]: number } = {};
+
+        // Contagem de produtos considerando repetições
+        produtosConsumidos.forEach((produto: { nomeP: string }) => {
+            const nomeProduto = produto.nomeP;
+            contagemProdutos[nomeProduto] = contagemProdutos[nomeProduto] ? contagemProdutos[nomeProduto] + 1 : 1;
+        });
+
+        // Converter para um array de objetos { nomeP: string, quantidade: number }
+        const topProdutos = Object.keys(contagemProdutos).map(nomeP => ({
+            nomeP,
+            quantidade: contagemProdutos[nomeP]
+        }));
+
+        // Ordenar os top produtos por quantidade (decrescente) e limitar aos top 5
+        topProdutos.sort((a, b) => b.quantidade - a.quantidade);
+        const top5Produtos = topProdutos.slice(0, 5);
+
+        // Retornar os top 5 produtos mais consumidos
+        res.status(200).json(top5Produtos);
+    } catch (error) {
+        console.error('Erro ao buscar os top produtos:', error);
+        res.status(500).send('Erro ao buscar os top produtos');
+    }
+});
+
+
+app.get('/top5PeS', async (req: Request, res: Response) => {
+    try {
+        // Busca quantidade de produtos e serviços consumidos
+        const quantidadeProdutos = await compraservice.buscarProdutosConsumidos(dbName);
+        const quantidadeServicos = await compraservice.buscarServicosConsumidos(dbName);
+
+        // Objeto para armazenar a contagem total de produtos e serviços
+        const contagemPeS: { [nome: string]: number } = {};
+
+        // Contagem de produtos considerando repetições
+        quantidadeProdutos.forEach((produto: { nomeP: string }) => {
+            const nomeProduto = produto.nomeP;
+            contagemPeS[nomeProduto] = contagemPeS[nomeProduto] ? contagemPeS[nomeProduto] + 1 : 1;
+        });
+
+        // Contagem de serviços considerando repetições
+        quantidadeServicos.forEach((servico: { nomeS: string }) => {
+            const nomeServico = servico.nomeS;
+            contagemPeS[nomeServico] = contagemPeS[nomeServico] ? contagemPeS[nomeServico] + 1 : 1;
+        });
+
+        // Converter para um array de objetos { nome: string, quantidade: number }
+        const top5PeS = Object.keys(contagemPeS)
+            .map(nome => ({
+                nome,
+                quantidade: contagemPeS[nome]
+            }))
+            .sort((a, b) => b.quantidade - a.quantidade)
+            .slice(0, 5);
+
+        // Retornar os top 5 produtos e serviços mais consumidos
+        res.status(200).json(top5PeS);
+    } catch (error) {
+        console.error('Erro ao buscar os top produtos e serviços:', error);
+        res.status(500).send('Erro ao buscar os top produtos e serviços');
+    }
+});

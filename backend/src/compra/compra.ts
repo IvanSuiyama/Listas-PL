@@ -97,6 +97,58 @@ export class Compra {
             });
         });
     }
+
+    async buscarServicosConsumidos(dbName: string): Promise<{ nomeS: string }[]> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, async (useError, useResults) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
+                } else {
+                    console.log("Banco de dados selecionado com sucesso");
+    
+                    // Consulta SQL para buscar os serviços consumidos
+                    this.connection.query(`SELECT nomeS FROM compras WHERE nomeS IS NOT NULL`, (error, results) => {
+                        if (error) {
+                            console.error("Erro ao buscar serviços consumidos:", error);
+                            reject(error);
+                        } else {
+                            // Transforma os resultados em um array de objetos { nomeS: string }
+                            const servicosConsumidos = results.map((row: any) => ({ nomeS: row.nomeS }));
+                            resolve(servicosConsumidos);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+
+    async buscarProdutosConsumidos(dbName: string): Promise<{ nomeP: string }[]> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, async (useError, useResults) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
+                } else {
+                    console.log("Banco de dados selecionado com sucesso");
+    
+                    // Consulta SQL para buscar os produtos consumidos
+                    this.connection.query(`SELECT nomeP FROM compras WHERE nomeP IS NOT NULL`, (error, results) => {
+                        if (error) {
+                            console.error("Erro ao buscar produtos consumidos:", error);
+                            reject(error);
+                        } else {
+                            // Transforma os resultados em um array de objetos { nomeP: string }
+                            const produtosConsumidos = results.map((row: any) => ({ nomeP: row.nomeP }));
+                            resolve(produtosConsumidos);
+                        }
+                    });
+                }
+            });
+        });
+    }
+    
     
     
 
