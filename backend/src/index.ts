@@ -483,3 +483,44 @@ app.get("/buscarProdutoPorId", async(req,res) => {
         res.status(500).send("Erro ao buscar produto por id");
     }
 });
+
+
+app.post("/excluirServico", async (req, res) => {
+    const { id_serv } = req.body;
+
+    try {
+        const excluirServico = await servicoSs.excluirServico(dbName, id_serv);
+        if (!excluirServico) {
+            console.error("Erro ao excluir serviço");
+            res.status(500).send("Erro ao excluir serviço");
+        } else {
+            console.log("Serviço excluído com sucesso");
+            res.status(200).send("Serviço excluído com sucesso");
+        }
+    } catch (error) {
+        console.error("Erro ao excluir serviço", error);
+        res.status(500).send("Erro ao excluir serviço");
+    }
+});
+
+app.get("/buscarServicoPorId", async (req, res) => {
+    const id_serv = req.query.id_serv as string;
+
+    if (!id_serv) {
+        res.status(400).send("Parâmetro 'id_serv' não foi fornecido");
+        return;
+    }
+
+    try {
+        const servico = await servicoSs.buscarServicoPorId(dbName, id_serv);
+
+        if (!servico) {
+            res.status(404).json(null);
+        } else {
+            res.status(200).json(servico);
+        }
+    } catch (error) {
+        console.error("Erro ao buscar serviço por id", error);
+        res.status(500).send("Erro ao buscar serviço por id");
+    }
+});

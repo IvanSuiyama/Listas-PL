@@ -735,3 +735,65 @@ app.get("/buscarProdutoPorId", function (req, res) { return __awaiter(void 0, vo
         }
     });
 }); });
+app.post("/excluirServico", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var id_serv, excluirServico, error_23;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                id_serv = req.body.id_serv;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, servicoSs.excluirServico(dbName, id_serv)];
+            case 2:
+                excluirServico = _a.sent();
+                if (!excluirServico) {
+                    console.error("Erro ao excluir serviço");
+                    res.status(500).send("Erro ao excluir serviço");
+                }
+                else {
+                    console.log("Serviço excluído com sucesso");
+                    res.status(200).send("Serviço excluído com sucesso");
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_23 = _a.sent();
+                console.error("Erro ao excluir serviço", error_23);
+                res.status(500).send("Erro ao excluir serviço");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/buscarServicoPorId", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var id_serv, servico, error_24;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                id_serv = req.query.id_serv;
+                if (!id_serv) {
+                    res.status(400).send("Parâmetro 'id_serv' não foi fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, servicoSs.buscarServicoPorId(dbName, id_serv)];
+            case 2:
+                servico = _a.sent();
+                if (!servico) {
+                    res.status(404).json(null);
+                }
+                else {
+                    res.status(200).json(servico);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_24 = _a.sent();
+                console.error("Erro ao buscar serviço por id", error_24);
+                res.status(500).send("Erro ao buscar serviço por id");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });

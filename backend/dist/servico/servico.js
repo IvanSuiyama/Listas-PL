@@ -124,7 +124,7 @@ var Servico = /** @class */ (function () {
             });
         });
     };
-    Servico.prototype.buscarServicoPorId = function (dbName, id_servico) {
+    Servico.prototype.excluirServico = function (dbName, id_serv) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -136,13 +136,41 @@ var Servico = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("SELECT * FROM servico WHERE id_serv = ?", [id_servico], function (error, results) {
+                                _this.connection.query("DELETE FROM servico WHERE id_serv = ?;", [id_serv], function (error, results) {
                                     if (error) {
-                                        console.error("Erro ao buscar produto:", error);
+                                        console.error("Erro ao excluir serviço:", error);
                                         reject(error);
                                     }
                                     else {
-                                        console.log("Produto encontrado: ".concat(JSON.stringify(results[0])));
+                                        console.log("Serviço excluído com sucesso!");
+                                        resolve(results.affectedRows > 0); // Verifique se houve exclusão
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Servico.prototype.buscarServicoPorId = function (dbName, id_serv) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("SELECT * FROM servico WHERE id_serv = ?", [id_serv], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar serviço:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Servi\u00E7o encontrado: ".concat(JSON.stringify(results[0])));
                                         resolve(results[0]);
                                     }
                                 });

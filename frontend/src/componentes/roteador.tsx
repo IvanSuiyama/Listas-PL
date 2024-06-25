@@ -43,6 +43,7 @@ type Cliente = {
 };
 
 type Servico = {
+    id?:number
     nome: string;
     descricao: string;
     valor: number;
@@ -188,9 +189,9 @@ export default class Roteador extends Component<{}, State> {
         }
     }
 
-    excluirServico(nomeServico: string) {
+    excluirServico(id_servico: number) {
         this.setState((prevState) => ({
-            servicos: prevState.servicos.filter((servico) => servico.nome !== nomeServico),
+            servicos: prevState.servicos.filter((servico) => servico.id !== id_servico),
         }));
     }
 
@@ -273,7 +274,7 @@ export default class Roteador extends Component<{}, State> {
                 ) : tela === "alterarServico" ? (
                     <AlterarServico tema="#e3f2fd" alterarServico={this.alterarServico} />
                 ) : tela === "excluirServico" ? (
-                    <ExcluirServico tema="#e3f2fd" excluirServico={this.excluirServico} servicos={servicos} />
+                    <ExcluirServico tema="#e3f2fd" excluirServico={this.excluirServico}  />
                 ) : tela === "compra" ? (
                     <CompraPS
                         clientes={clientes}
