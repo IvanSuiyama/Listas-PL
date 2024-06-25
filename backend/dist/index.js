@@ -47,6 +47,7 @@ var cliente_1 = require("./cliente/cliente");
 var pet_1 = require("./pet/pet");
 var produto_1 = require("./produto/produto");
 var servico_1 = require("./servico/servico");
+var compra_1 = require("./compra/compra");
 var app = (0, express_1.default)();
 var PORT = process.env.PORT || 5000;
 var dbName = "PetLovers";
@@ -72,6 +73,7 @@ var clienteService = new cliente_1.Cliente(connection);
 var petservices = new pet_1.Pet(connection);
 var produtoservices = new produto_1.Produto(connection);
 var servicoSs = new servico_1.Servico(connection);
+var compraservice = new compra_1.Compra(connection);
 app.get('/listarClientes', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var clientes, error_1;
     return __generator(this, function (_a) {
@@ -794,6 +796,87 @@ app.get("/buscarServicoPorId", function (req, res) { return __awaiter(void 0, vo
                 res.status(500).send("Erro ao buscar serviço por id");
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/cadastrarCompra", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, cpfCliente, idServico, idProduto, cliente, produto, servico, nomeCliente, nomeP, nomeS, valorP, valorS, sucesso, error_25;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, cpfCliente = _a.cpfCliente, idServico = _a.idServico, idProduto = _a.idProduto;
+                if (!cpfCliente || (!idServico && !idProduto)) {
+                    res.status(400).send({ message: "Parâmetros insuficientes fornecidos" });
+                    return [2 /*return*/];
+                }
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 8, , 9]);
+                return [4 /*yield*/, clienteService.buscarclienteporCpf(dbName, cpfCliente)];
+            case 2:
+                cliente = _b.sent();
+                if (!cliente)
+                    throw new Error("Cliente não encontrado");
+                produto = null;
+                servico = null;
+                if (!idProduto) return [3 /*break*/, 4];
+                return [4 /*yield*/, produtoservices.buscarProdutoPorId(dbName, idProduto)];
+            case 3:
+                produto = _b.sent();
+                if (!produto)
+                    throw new Error("Produto não encontrado");
+                _b.label = 4;
+            case 4:
+                if (!idServico) return [3 /*break*/, 6];
+                return [4 /*yield*/, servicoSs.buscarServicoPorId(dbName, idServico)];
+            case 5:
+                servico = _b.sent();
+                if (!servico)
+                    throw new Error("Serviço não encontrado");
+                _b.label = 6;
+            case 6:
+                nomeCliente = cliente.nome;
+                nomeP = produto ? produto.nome : null;
+                nomeS = servico ? servico.nome : null;
+                valorP = produto ? produto.valor : null;
+                valorS = servico ? servico.valor : null;
+                return [4 /*yield*/, compraservice.cadastrarCompra(dbName, nomeCliente, nomeP, nomeS, valorP, valorS)];
+            case 7:
+                sucesso = _b.sent();
+                if (sucesso) {
+                    res.status(200).send({ message: "Compra cadastrada com sucesso" });
+                }
+                else {
+                    res.status(500).send({ message: "Erro ao cadastrar compra" });
+                }
+                return [3 /*break*/, 9];
+            case 8:
+                error_25 = _b.sent();
+                console.error("Erro ao cadastrar compra", error_25);
+                res.status(500).send({ message: error_25.message });
+                return [3 /*break*/, 9];
+            case 9: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/mostrarCompras", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var compras, error_26;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, compraservice.buscarCompras(dbName)];
+            case 1:
+                compras = _a.sent();
+                console.log(compras);
+                res.json(compras);
+                return [3 /*break*/, 3];
+            case 2:
+                error_26 = _a.sent();
+                console.error('Erro ao obter compras:', error_26);
+                res.status(500).json({ error: 'Erro interno ao obter compras' });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); });

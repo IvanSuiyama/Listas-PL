@@ -4,14 +4,14 @@ import ListaCliente from "./clientes/listaClientes";
 import FormularioCadastroCliente from "./clientes/formularioCadastroCliente";
 import FormularioCadastroPet from "./pets/formularioPet";
 import ListaPet from "./pets/listaPet";
-import AlterarCliente from "./clientes/alterarClienes"; // Corrigido o nome da importação
-import AlterarPet from "./pets/alterarPet"; // Corrigido o nome da importação
+import AlterarCliente from "./clientes/alterarClienes"; 
+import AlterarPet from "./pets/alterarPet"; 
 import ExcluirPet from "./pets/excluirPet";
 import ExcluirCliente from "./clientes/excluirCliente";
 import Home from "./home";
 import FormularioCadastroProduto from "./produtos/cadastroProduto";
 import ListaProduto from "./produtos/listaProduto";
-import AlterarProduto from "./produtos/alteraProduto"; // Corrigido o nome da importação
+import AlterarProduto from "./produtos/alteraProduto";
 import ExcluirProduto from "./produtos/excluirProduto";
 import FormularioCadastroServico from "./servicos/formularioCadastroServico";
 import ListarServico from "./servicos/listarServico";
@@ -196,8 +196,8 @@ export default class Roteador extends Component<{}, State> {
     }
 
     registrarCompra(compra: {
-        cpf: string;
-        nomeCliente: string;
+        clienteCpf: string;
+        clienteNome: string;
         itens: {
             nome: string;
             tipo: "produto" | "servico";
@@ -205,8 +205,8 @@ export default class Roteador extends Component<{}, State> {
         }[];
     }) {
         const novaCompra: Compra = {
-            clienteCpf: compra.cpf,
-            clienteNome: compra.nomeCliente,
+            clienteCpf: compra.clienteCpf,
+            clienteNome: compra.clienteNome,
             itens: compra.itens,
         };
 
@@ -229,7 +229,7 @@ export default class Roteador extends Component<{}, State> {
                     { title: "Pets", items: ["cadastroPet", "listaPet", "alterarPet", "excluirPet"] },
                     { title: "Produtos", items: ["cadastroProduto", "listarProduto", "alterarProduto", "excluirProduto"] },
                     { title: "Serviços", items: ["cadastroServico", "listarServico", "alterarServico", "excluirServico"] },
-                    { title: "Compras Serviços", items: ["compra", "mostraCompra"] },
+                    { title: "Compras Serviços", items: ["compra", "mostraCompras"] },
                     { title: "Registros", items: ["Top10 Quantidade", "Servicos/Produtos mais consumidos", "S/P por tipo raça pet", "Top5 valor"] }
                 ]}
             />
@@ -277,13 +277,10 @@ export default class Roteador extends Component<{}, State> {
                     <ExcluirServico tema="#e3f2fd" excluirServico={this.excluirServico}  />
                 ) : tela === "compra" ? (
                     <CompraPS
-                        clientes={clientes}
-                        produtos={produtos}
-                        servicos={servicos}
-                        registrarCompra={this.registrarCompra}
+                       
                     />
-                ) : tela === "mostraCompra" ? (
-                    <ListaCompras compras={compras} />
+                ) : tela === "mostraCompras" ? (
+                    <ListaCompras />
                 ) : null}
             </>
         );

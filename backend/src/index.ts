@@ -6,6 +6,7 @@ import { Cliente } from "./cliente/cliente";
 import { Pet } from "./pet/pet";
 import { Produto } from "./produto/produto";
 import { Servico } from "./servico/servico";
+import { Compra } from "./compra/compra";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const dbName = "PetLovers"
@@ -42,6 +43,7 @@ const produtoservices = new Produto(connection);
 
 const servicoSs = new Servico(connection)
 
+const compraservice = new Compra(connection)
 
 
 app.get('/listarClientes', async (req, res) => {
@@ -524,3 +526,61 @@ app.get("/buscarServicoPorId", async (req, res) => {
         res.status(500).send("Erro ao buscar serviço por id");
     }
 });
+
+app.post("/cadastrarCompra", async (req, res) => {
+    const { cpfCliente, idServico, idProduto } = req.body;
+
+    if (!cpfCliente || (!idServico && !idProduto)) {
+        res.status(400).send({ message: "Parâmetros insuficientes fornecidos" });
+        return;
+    }
+
+    try {
+        const cliente = await clienteService.buscarclienteporCpf(dbName, cpfCliente);
+        if (!cliente) throw new Error("Cliente não encontrado");
+
+        let produto = null;
+        let servico = null;
+
+        if (idProduto) {
+            produto = await produtoservices.buscarProdutoPorId(dbName, idProduto);
+            if (!produto) throw new Error("Produto não encontrado");
+        }
+
+        if (idServico) {
+            servico = await servicoSs.buscarServicoPorId(dbName, idServico);
+            if (!servico) throw new Error("Serviço não encontrado");
+        }
+
+        const nomeCliente = cliente.nome;
+        const nomeP = produto ? produto.nome : null;
+        const nomeS = servico ? servico.nome : null;
+        const valorP = produto ? produto.valor : null;
+        const valorS = servico ? servico.valor : null;
+
+        const sucesso = await compraservice.cadastrarCompra(dbName, nomeCliente, nomeP, nomeS, valorP, valorS);
+
+        if (sucesso) {
+            res.status(200).send({ message: "Compra cadastrada com sucesso" });
+        } else {
+            res.status(500).send({ message: "Erro ao cadastrar compra" });
+        }
+    } catch (error) {
+        console.error("Erro ao cadastrar compra", error);
+        res.status(500).send({ message: (error as Error).message });
+    }
+});
+
+
+app.get("/mostrarCompras", async (req, res) => {
+    try {
+        const compras = await compraservice.buscarCompras(dbName);
+        console.log(compras)
+        res.json(compras);
+    } catch (error) {
+        console.error('Erro ao obter compras:', error);
+        res.status(500).json({ error: 'Erro interno ao obter compras' });
+    }
+})
+
+

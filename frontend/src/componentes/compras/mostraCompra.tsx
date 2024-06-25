@@ -1,21 +1,33 @@
-// mostraCompra.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 type Compra = {
-    clienteCpf: string;
-    clienteNome: string;
-    itens: {
-        nome: string;
-        tipo: "produto" | "servico";
-        valor: number;
-    }[];
+    nomeCliente: string;
+    nomeP?: string;
+    valorP?: string;
+    nomeS?: string;
+    valorS?: string;
 };
 
-type Props = {
-    compras: Compra[];
-};
+const ListaCompras: React.FC = () => {
+    const [compras, setCompras] = useState<Compra[]>([]);
 
-const ListaCompras: React.FC<Props> = ({ compras }) => {
+    useEffect(() => {
+        const fetchCompras = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/mostrarCompras');
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar compras');
+                }
+                const data = await response.json();
+                setCompras(data);
+            } catch (error) {
+                console.error('Erro ao buscar compras:', error);
+            }
+        };
+
+        fetchCompras();
+    }, []);
+
     return (
         <div className="container-fluid">
             <h2>Lista de Compras</h2>
@@ -28,15 +40,19 @@ const ListaCompras: React.FC<Props> = ({ compras }) => {
                     {compras.map((compra, index) => (
                         <div key={index}>
                             <div className="list-group-item list-group-item-action">
-                                <h5>{compra.clienteNome}</h5>
-                                <p>CPF: {compra.clienteCpf}</p>
-                                {compra.itens.map((item, idx) => (
-                                    <p key={idx}>
-                                        {item.tipo === "produto" ? "Produto" : "Serviço"}: {item.nome} - R$ {item.valor}
+                                <h5>Cliente: {compra.nomeCliente}</h5>
+                                {compra.nomeP && (
+                                    <p>
+                                        Produto: {compra.nomeP} - R$ {compra.valorP}
                                     </p>
-                                ))}
+                                )}
+                                {compra.nomeS && (
+                                    <p>
+                                        Serviço: {compra.nomeS} - R$ {compra.valorS}
+                                    </p>
+                                )}
                             </div>
-                            {index !== compras.length - 1 && <hr style={{ borderColor: "blue" }} />}
+                            {index !== compras.length - 1 && <hr style={{ borderColor: 'blue' }} />}
                         </div>
                     ))}
                 </div>

@@ -102,13 +102,11 @@ export function createDatabaseAndTables() {
           CREATE TABLE IF NOT EXISTS compras (
             id_compra INT AUTO_INCREMENT PRIMARY KEY,
             nomeCliente VARCHAR(255),
-            nomePet VARCHAR(255),
             nomeP VARCHAR(255),
             nomeS VARCHAR(255),
             valorP DECIMAL(10, 2),
             valorS DECIMAL(10, 2),
             FOREIGN KEY (nomeCliente) REFERENCES cliente(nome),
-            FOREIGN KEY (nomePet) REFERENCES pet(nomePet),
             FOREIGN KEY (nomeP) REFERENCES produto(nome),
             FOREIGN KEY (nomeS) REFERENCES servico(nome)
           )
