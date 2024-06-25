@@ -436,21 +436,31 @@ app.get("/servicos", async (req, res) => {
     }
 }) 
 
-app.post("/excluirProduto", async (req, res) =>{
-    const id_prod = req.body
 
-    const excluirProduto = await produtoservices.excuirProduto(dbName, id_prod)
+app.post("/excluirProduto", async (req, res) => {
+    const { id_prod } = req.body;
 
-    if (!excluirProduto) {
-        console.error("Erro ao exluir produto")
-        res.status(500).send("Erro ao excluirProduto")
+    if (!id_prod) {
+        console.error("ID do produto não fornecido");
+        res.status(400).send("ID do produto não fornecido");
+        return;
     }
 
-    else{ 
-        console.log("Produto excluido com sucesso")
-        res.status(200).send("Produto excluido com sucesso")
+    try {
+        const excluirProduto = await produtoservices.excuirProduto(dbName, id_prod);
+
+        if (!excluirProduto) {
+            console.error("Erro ao excluir produto");
+            res.status(500).send("Erro ao excluir produto");
+        } else {
+            console.log("Produto excluído com sucesso");
+            res.status(200).send("Produto excluído com sucesso");
+        }
+    } catch (error) {
+        console.error("Erro ao excluir produto", error);
+        res.status(500).send("Erro ao excluir produto");
     }
-})
+});
 
 app.get("/buscarProdutoPorId", async(req,res) => {
     const id_prod:string  = req.query.id_prod as string

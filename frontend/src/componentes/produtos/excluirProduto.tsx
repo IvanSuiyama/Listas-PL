@@ -77,7 +77,8 @@ export default class ExcluirProduto extends Component<Props, State> {
                     });
                     this.fetchProdutos(); // Atualizar a lista de produtos
                 } else {
-                    console.error("Erro ao excluir produto:", response.statusText);
+                    const errorText = await response.text();
+                    console.error("Erro ao excluir produto:", errorText);
                     this.setState({ erroAoExcluirProduto: true });
                 }
             } catch (error) {

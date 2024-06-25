@@ -669,28 +669,42 @@ app.get("/servicos", function (req, res) { return __awaiter(void 0, void 0, void
     });
 }); });
 app.post("/excluirProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id_prod, excluirProduto;
+    var id_prod, excluirProduto, error_21;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                id_prod = req.body;
-                return [4 /*yield*/, produtoservices.excuirProduto(dbName, id_prod)];
+                id_prod = req.body.id_prod;
+                if (!id_prod) {
+                    console.error("ID do produto não fornecido");
+                    res.status(400).send("ID do produto não fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
             case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, produtoservices.excuirProduto(dbName, id_prod)];
+            case 2:
                 excluirProduto = _a.sent();
                 if (!excluirProduto) {
-                    console.error("Erro ao exluir produto");
-                    res.status(500).send("Erro ao excluirProduto");
+                    console.error("Erro ao excluir produto");
+                    res.status(500).send("Erro ao excluir produto");
                 }
                 else {
-                    console.log("Produto excluido com sucesso");
-                    res.status(200).send("Produto excluido com sucesso");
+                    console.log("Produto excluído com sucesso");
+                    res.status(200).send("Produto excluído com sucesso");
                 }
-                return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 3:
+                error_21 = _a.sent();
+                console.error("Erro ao excluir produto", error_21);
+                res.status(500).send("Erro ao excluir produto");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); });
 app.get("/buscarProdutoPorId", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id_prod, produto, error_21;
+    var id_prod, produto, error_22;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -713,8 +727,8 @@ app.get("/buscarProdutoPorId", function (req, res) { return __awaiter(void 0, vo
                 }
                 return [3 /*break*/, 4];
             case 3:
-                error_21 = _a.sent();
-                console.error("Erro ao buscar produto por id", error_21);
+                error_22 = _a.sent();
+                console.error("Erro ao buscar produto por id", error_22);
                 res.status(500).send("Erro ao buscar produto por id");
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
