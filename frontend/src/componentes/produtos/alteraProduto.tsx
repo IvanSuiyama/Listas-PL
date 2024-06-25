@@ -6,7 +6,7 @@ type Props = {
 };
 
 type Produto = {
-    id_prod: number; // Alterado de string para number
+    id_prod: number;
     nome: string;
     descricao: string;
     valor: number;
@@ -18,6 +18,7 @@ type State = {
     valor: string;
     produtoSelecionado: string;
     produtos: Produto[];
+    erroAoAlterarProduto: boolean;
 };
 
 export default class AlterarProduto extends Component<Props, State> {
@@ -29,6 +30,7 @@ export default class AlterarProduto extends Component<Props, State> {
             valor: "",
             produtoSelecionado: "",
             produtos: [],
+            erroAoAlterarProduto: false,
         };
     }
 
@@ -58,7 +60,8 @@ export default class AlterarProduto extends Component<Props, State> {
                 nome: produtoSelecionado.nome,
                 descricao: produtoSelecionado.descricao,
                 valor: produtoSelecionado.valor.toString(),
-                produtoSelecionado: produtoSelecionado.id_prod.toString(), // Convertendo para string para manter a consistência no estado
+                produtoSelecionado: produtoSelecionado.id_prod.toString(),
+                erroAoAlterarProduto: false, // Resetando o estado de erro ao selecionar novo produto
             });
         } else {
             console.log("Produto selecionado não encontrado");
@@ -67,6 +70,7 @@ export default class AlterarProduto extends Component<Props, State> {
                 descricao: "",
                 valor: "",
                 produtoSelecionado: "",
+                erroAoAlterarProduto: false, // Resetando o estado de erro ao selecionar novo produto
             });
         }
     };
@@ -79,18 +83,18 @@ export default class AlterarProduto extends Component<Props, State> {
     handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const { nome, descricao, valor, produtoSelecionado } = this.state;
-
+    
         if (!produtoSelecionado) {
             alert("Selecione um produto antes de enviar o formulário!");
             return;
         }
-
+    
         const valorNum = parseFloat(valor);
         if (isNaN(valorNum)) {
             alert("Valor do produto inválido!");
             return;
         }
-
+    
         try {
             const response = await fetch("http://localhost:5000/alterarProduto", {
                 method: "PUT",
@@ -98,38 +102,45 @@ export default class AlterarProduto extends Component<Props, State> {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    id_prod: parseInt(produtoSelecionado, 10), // Convertendo para número antes de enviar
+                    id_prod: parseInt(produtoSelecionado, 10),
                     nome,
                     valor: valorNum,
                     descricao,
                 }),
             });
-
+    
             if (response.ok) {
-                alert("Produto alterado com sucesso!");
-                const produtoAtualizado: Produto = { id_prod: parseInt(produtoSelecionado, 10), nome, descricao, valor: valorNum };
-                this.props.alterarProduto(produtoAtualizado);
-                this.setState({
-                    nome: "",
-                    descricao: "",
-                    valor: "",
-                    produtoSelecionado: "",
-                });
-                this.fetchProdutos();
+                const data = await response.json();
+                if (data.message === "Produto atualizado com sucesso") { // Ajustado para verificar a mensagem de sucesso correta
+                    const produtoAtualizado: Produto = { id_prod: parseInt(produtoSelecionado, 10), nome, descricao, valor: valorNum };
+                    this.props.alterarProduto(produtoAtualizado);
+                    alert("Produto alterado com sucesso!");
+                    this.setState({
+                        nome: "",
+                        descricao: "",
+                        valor: "",
+                        produtoSelecionado: "",
+                    });
+                    this.fetchProdutos();
+                } else {
+                    console.error(`Erro ao alterar produto: ${data.error}`);
+                    alert(`Erro ao alterar produto: ${data.error}`);
+                }
             } else {
                 const errorText = await response.text();
-                console.error("Erro ao alterar produto:", errorText);
-                alert("Erro ao alterar o produto: " + errorText);
+                console.error(`Erro ao alterar produto: ${errorText}`);
+                alert(`Erro ao alterar produto: ${errorText}`);
             }
         } catch (error) {
-            console.error("Erro ao fazer requisição:", error);
-            alert("Erro ao alterar o produto. Verifique o console para mais detalhes.");
+            console.error("Erro ao enviar solicitação para alterar produto", error);
+            alert("Erro ao alterar produto. Verifique o console para mais detalhes.");
         }
     };
+    
 
     render() {
         const { tema } = this.props;
-        const { nome, descricao, valor, produtoSelecionado, produtos } = this.state;
+        const { nome, descricao, valor, produtoSelecionado, produtos, erroAoAlterarProduto } = this.state;
 
         return (
             <div className="container-fluid">
@@ -194,6 +205,11 @@ export default class AlterarProduto extends Component<Props, State> {
                                     Alterar Produto
                                 </button>
                             </div>
+                            {erroAoAlterarProduto && (
+                                <div className="alert alert-danger" role="alert">
+                                    Ocorreu um erro ao alterar o produto. Por favor, tente novamente.
+                                </div>
+                            )}
                         </>
                     )}
                 </form>

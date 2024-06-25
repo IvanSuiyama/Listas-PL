@@ -152,6 +152,34 @@ var Produto = /** @class */ (function () {
             });
         });
     };
+    Produto.prototype.excuirProduto = function (dbName, id_prod) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("DELETE from produto WHERE id_prod = ?;\n                        ", [id_prod], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao excluir Produto :", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        console.log("Produto excluido com sucesso!");
+                                        resolve(results.affectedRows > 0); // Verifique se houve atualização
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
     return Produto;
 }());
 exports.Produto = Produto;

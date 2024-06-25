@@ -104,4 +104,31 @@ export class Produto {
         });
     }
 
+    async excuirProduto(dbName:string, id_prod:string){
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!");
+                    this.connection.query(
+                        `DELETE from produto WHERE id_prod = ?;
+                        `,
+                        [id_prod],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Erro ao excluir Produto :", error);
+                                reject(error);
+                            } else {
+                                console.log("Produto excluido com sucesso!");
+                                resolve(results.affectedRows > 0);  // Verifique se houve atualização
+                            }
+                        }
+                    );
+                }
+            });
+        });
+    }
+
 }

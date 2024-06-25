@@ -480,6 +480,7 @@ app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, v
         }
     });
 }); });
+//bozinho
 app.put("/alterarProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, id_prod, nome, valor, descricao, produtook, alteraProduto, error_15;
     return __generator(this, function (_b) {
@@ -500,22 +501,22 @@ app.put("/alterarProduto", function (req, res) { return __awaiter(void 0, void 0
                 alteraProduto = _b.sent();
                 if (alteraProduto) {
                     console.log("Produto alterado com sucesso");
-                    res.status(200).send("Produto alterado com sucesso");
+                    res.status(200).json({ message: "Produto atualizado com sucesso!" });
                 }
                 else {
-                    console.error("Erro ao alterar Produto");
-                    res.status(500).send("Erro ao alterar produto");
+                    console.error("Erro ao alterar Produto no banco de dados");
+                    res.status(500).json({ error: "Erro ao alterar produto no banco de dados" });
                 }
                 return [3 /*break*/, 5];
             case 4:
                 console.log("Produto não encontrado");
-                res.status(404).send("Produto não encontrado");
+                res.status(404).json({ error: "Produto não encontrado" });
                 _b.label = 5;
             case 5: return [3 /*break*/, 7];
             case 6:
                 error_15 = _b.sent();
                 console.error("Erro ao alterar Produto", error_15);
-                res.status(500).send("Erro ao alterar produto");
+                res.status(500).json({ error: "Erro interno ao tentar alterar o produto" });
                 return [3 /*break*/, 7];
             case 7: return [2 /*return*/];
         }
@@ -542,10 +543,181 @@ app.get("/produtos", function (req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); });
-/* app.put("/alterarServico", async (req: Request, res: Response) => {
-    
-});
-
-app.get("/servicos", async (req, res) => {
-
-}) */ 
+//bo
+app.post("/excluirCliente", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, resultado, error_17;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cpf = req.body.cpf;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, clienteService.excluirCliente(dbName, cpf)];
+            case 2:
+                resultado = _a.sent();
+                if (resultado) {
+                    res.status(200).json({ success: true });
+                }
+                else {
+                    res.status(500).json({ success: false, message: 'Erro ao excluir cliente.' });
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_17 = _a.sent();
+                console.error('Erro ao excluir cliente', error_17);
+                res.status(500).json({ success: false, message: 'Erro interno ao processar a requisição.' });
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+// bo
+app.get("/verificarPetsDoCliente", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, pets, error_18;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cpf = req.query.cpf;
+                if (!cpf) {
+                    res.status(400).send("Parâmetro 'cpf' não foi fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, clienteService.verificarPetsDoCliente(dbName, cpf)];
+            case 2:
+                pets = _a.sent();
+                if (!pets) {
+                    res.status(404).json(null);
+                }
+                else {
+                    res.status(200).json(pets);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_18 = _a.sent();
+                console.error("Erro ao buscar pets por cpf do dono", error_18);
+                res.status(500).send("Erro ao buscar pets por cpf do dono");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+//bozinho
+app.put("/alterarServico", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, id_serv, nome, valor, descricao, servicoOk, alteraServico, error_19;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = req.body, id_serv = _a.id_serv, nome = _a.nome, valor = _a.valor, descricao = _a.descricao;
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 6, , 7]);
+                console.log("Recebido para altera\u00E7\u00E3o - ID: ".concat(id_serv, ", Nome: ").concat(nome, ", Valor: ").concat(valor, ", Descri\u00E7\u00E3o: ").concat(descricao));
+                return [4 /*yield*/, servicoSs.buscarServicoPorId(dbName, id_serv)];
+            case 2:
+                servicoOk = _b.sent();
+                if (!servicoOk) return [3 /*break*/, 4];
+                console.log("Servi\u00E7o encontrado: ".concat(JSON.stringify(servicoOk)));
+                return [4 /*yield*/, servicoSs.alterarServico(dbName, id_serv, nome, descricao, valor)];
+            case 3:
+                alteraServico = _b.sent();
+                if (alteraServico) {
+                    console.log("Serviço alterado com sucesso");
+                    res.status(200).json({ message: "Serviço atualizado com sucesso!" });
+                }
+                else {
+                    console.error("Erro ao alterar Serviço no banco de dados");
+                    res.status(500).json({ error: "Erro ao alterar serviço no banco de dados" });
+                }
+                return [3 /*break*/, 5];
+            case 4:
+                console.log("Produto não encontrado");
+                res.status(404).json({ error: "Serviço não encontrado" });
+                _b.label = 5;
+            case 5: return [3 /*break*/, 7];
+            case 6:
+                error_19 = _b.sent();
+                console.error("Erro ao alterar Serviço", error_19);
+                res.status(500).json({ error: "Erro interno ao tentar alterar o produto" });
+                return [3 /*break*/, 7];
+            case 7: return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/servicos", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var servicos, error_20;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, servicoSs.buscarServico(dbName)];
+            case 1:
+                servicos = _a.sent();
+                console.log("Serviços retornados do banco de dados:", servicos); // Log dos produtos retornados
+                res.json(servicos);
+                return [3 /*break*/, 3];
+            case 2:
+                error_20 = _a.sent();
+                console.error("Erro ao buscar serviços:", error_20);
+                res.status(500).send("Erro ao buscar serviços.");
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.post("/excluirProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var id_prod, excluirProduto;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                id_prod = req.body;
+                return [4 /*yield*/, produtoservices.excuirProduto(dbName, id_prod)];
+            case 1:
+                excluirProduto = _a.sent();
+                if (!excluirProduto) {
+                    console.error("Erro ao exluir produto");
+                    res.status(500).send("Erro ao excluirProduto");
+                }
+                else {
+                    console.log("Produto excluido com sucesso");
+                    res.status(200).send("Produto excluido com sucesso");
+                }
+                return [2 /*return*/];
+        }
+    });
+}); });
+app.get("/buscarProdutoPorId", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var id_prod, produto, error_21;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                id_prod = req.query.id_prod;
+                if (!id_prod) {
+                    res.status(400).send("Parâmetro 'id' não foi fornecido");
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, produtoservices.buscarProdutoPorId(dbName, id_prod)];
+            case 2:
+                produto = _a.sent();
+                if (!produto) {
+                    res.status(404).json(null);
+                }
+                else {
+                    res.status(200).json(produto);
+                }
+                return [3 /*break*/, 4];
+            case 3:
+                error_21 = _a.sent();
+                console.error("Erro ao buscar produto por id", error_21);
+                res.status(500).send("Erro ao buscar produto por id");
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });

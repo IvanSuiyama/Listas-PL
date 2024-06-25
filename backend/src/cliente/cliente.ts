@@ -139,6 +139,62 @@ export class Cliente {
             });
         });
     }
+
+    async excluirCliente(dbName:string, cpf:string) {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
+                } else {
+                    console.log("Banco de dados selecionado com sucesso!");
+                    this.connection.query(
+                        `DELETE FROM cliente WHERE cpf = ?;`,
+                        [cpf],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Erro ao excluir cliente:", error);
+                                reject(error);
+                            } else {
+                                if (results.affectedRows > 0) {
+                                    console.log("Cliente excluído com sucesso!");
+                                    resolve(true); // Exclusão bem-sucedida
+                                } else {
+                                    console.log("Cliente não encontrado ou não pôde ser excluído.");
+                                    resolve(false); // Nenhum pet foi excluído (não encontrado)
+                                }
+                            }
+                        }
+                    );
+                }
+            });
+        });
+    }
+
+    async verificarPetsDoCliente(dbName: string, cpf: string): Promise<number> {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, (useError, _) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
+                } else {
+                    this.connection.query(
+                        `SELECT COUNT(*) AS petCount FROM pet WHERE cpfDoDono = ?;`,
+                        [cpf],
+                        (error, results) => {
+                            if (error) {
+                                console.error("Erro ao verificar pets do cliente:", error);
+                                reject(error);
+                            } else {
+                                const petCount = results[0].petCount as number; // Convertendo para number
+                                resolve(petCount);
+                            }
+                        }
+                    );
+                }
+            });
+        });
+    }
     
 
 }

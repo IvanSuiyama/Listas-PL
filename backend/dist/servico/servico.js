@@ -136,7 +136,7 @@ var Servico = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso!");
-                                _this.connection.query("SELECT * FROM servico WHERE ide_serv = ?", [id_servico], function (error, results) {
+                                _this.connection.query("SELECT * FROM servico WHERE id_serv = ?", [id_servico], function (error, results) {
                                     if (error) {
                                         console.error("Erro ao buscar produto:", error);
                                         reject(error);

@@ -91,7 +91,7 @@ export class Servico {
                     reject(useError);
                 } else {
                     console.log("Banco de dados selecionado com sucesso!");
-                    this.connection.query(`SELECT * FROM servico WHERE ide_serv = ?`, [id_servico], (error, results) => {
+                    this.connection.query(`SELECT * FROM servico WHERE id_serv = ?`, [id_servico], (error, results) => {
                         if (error) {
                             console.error("Erro ao buscar produto:", error);
                             reject(error);

@@ -316,7 +316,8 @@ app.post("/excluirPet", async (req, res) => {
     }
 });
 
-app.put("/alterarProduto", async (req: Request, res: Response) => {
+//bozinho
+app.put("/alterarProduto", async (req, res) => {
     const { id_prod, nome, valor, descricao } = req.body;
 
     try {
@@ -329,20 +330,21 @@ app.put("/alterarProduto", async (req: Request, res: Response) => {
 
             if (alteraProduto) {
                 console.log("Produto alterado com sucesso");
-                res.status(200).send("Produto alterado com sucesso");
+                res.status(200).json({ message: "Produto atualizado com sucesso!" });
             } else {
-                console.error("Erro ao alterar Produto");
-                res.status(500).send("Erro ao alterar produto");
+                console.error("Erro ao alterar Produto no banco de dados");
+                res.status(500).json({ error: "Erro ao alterar produto no banco de dados" });
             }
         } else {
             console.log("Produto não encontrado");
-            res.status(404).send("Produto não encontrado");
+            res.status(404).json({ error: "Produto não encontrado" });
         }
     } catch (error) {
         console.error("Erro ao alterar Produto", error);
-        res.status(500).send("Erro ao alterar produto");
+        res.status(500).json({ error: "Erro interno ao tentar alterar o produto" });
     }
 });
+
 
 app.get("/produtos", async (req, res) => {
     try {
@@ -355,11 +357,119 @@ app.get("/produtos", async (req, res) => {
     }
 });
 
+//bo
+app.post("/excluirCliente", async(req, res) => {
+    const { cpf } = req.body;
 
-/* app.put("/alterarServico", async (req: Request, res: Response) => {
-    
+    try {
+        const resultado = await clienteService.excluirCliente(dbName, cpf);
+        if (resultado) {
+            res.status(200).json({ success: true });
+        } else {
+            res.status(500).json({ success: false, message: 'Erro ao excluir cliente.' });
+        }
+    } catch (error) {
+        console.error('Erro ao excluir cliente', error);
+        res.status(500).json({ success: false, message: 'Erro interno ao processar a requisição.' });
+    }
+});
+
+// bo
+app.get("/verificarPetsDoCliente", async (req:Request, res:Response) => {
+    const cpf:string = req.query.cpf as string
+
+    if (!cpf) {
+        res.status(400).send("Parâmetro 'cpf' não foi fornecido");
+        return;
+    }
+
+    try {
+        const pets = await clienteService.verificarPetsDoCliente(dbName, cpf)
+        if (!pets) {
+            res.status(404).json(null);
+        } else {
+            res.status(200).json(pets);
+        }
+    } catch (error) {
+        console.error("Erro ao buscar pets por cpf do dono", error);
+        res.status(500).send("Erro ao buscar pets por cpf do dono");
+    }
+})
+
+//bozinho
+app.put("/alterarServico", async (req: Request, res: Response) => {
+    const { id_serv, nome, valor, descricao } = req.body;
+
+    try {
+        console.log(`Recebido para alteração - ID: ${id_serv}, Nome: ${nome}, Valor: ${valor}, Descrição: ${descricao}`);
+        const servicoOk = await servicoSs.buscarServicoPorId(dbName, id_serv);
+
+        if (servicoOk) {
+            console.log(`Serviço encontrado: ${JSON.stringify(servicoOk)}`);
+            const alteraServico = await servicoSs.alterarServico(dbName, id_serv, nome, descricao, valor);
+
+            if (alteraServico) {
+                console.log("Serviço alterado com sucesso");
+                res.status(200).json({ message: "Serviço atualizado com sucesso!" });
+            } else {
+                console.error("Erro ao alterar Serviço no banco de dados");
+                res.status(500).json({ error: "Erro ao alterar serviço no banco de dados" });
+            }
+        } else {
+            console.log("Produto não encontrado");
+            res.status(404).json({ error: "Serviço não encontrado" });
+        }
+    } catch (error) {
+        console.error("Erro ao alterar Serviço", error);
+        res.status(500).json({ error: "Erro interno ao tentar alterar o produto" });
+    }
 });
 
 app.get("/servicos", async (req, res) => {
+    try {
+        const servicos = await servicoSs.buscarServico(dbName);
+        console.log("Serviços retornados do banco de dados:", servicos); // Log dos produtos retornados
+        res.json(servicos);
+    } catch (error) {
+        console.error("Erro ao buscar serviços:", error);
+        res.status(500).send("Erro ao buscar serviços.");
+    }
+}) 
 
-}) */
+app.post("/excluirProduto", async (req, res) =>{
+    const id_prod = req.body
+
+    const excluirProduto = await produtoservices.excuirProduto(dbName, id_prod)
+
+    if (!excluirProduto) {
+        console.error("Erro ao exluir produto")
+        res.status(500).send("Erro ao excluirProduto")
+    }
+
+    else{ 
+        console.log("Produto excluido com sucesso")
+        res.status(200).send("Produto excluido com sucesso")
+    }
+})
+
+app.get("/buscarProdutoPorId", async(req,res) => {
+    const id_prod:string  = req.query.id_prod as string
+    
+    if (!id_prod) {
+        res.status(400).send("Parâmetro 'id' não foi fornecido");
+        return;
+    }
+
+    try {
+        const produto = await produtoservices.buscarProdutoPorId(dbName, id_prod)
+
+        if (!produto) {
+            res.status(404).json(null);
+        } else {
+            res.status(200).json(produto);
+        }
+    } catch (error) {
+        console.error("Erro ao buscar produto por id", error);
+        res.status(500).send("Erro ao buscar produto por id");
+    }
+});

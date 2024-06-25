@@ -184,6 +184,67 @@ var Cliente = /** @class */ (function () {
             });
         });
     };
+    Cliente.prototype.excluirCliente = function (dbName, cpf) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso!");
+                                _this.connection.query("DELETE FROM cliente WHERE cpf = ?;", [cpf], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao excluir cliente:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        if (results.affectedRows > 0) {
+                                            console.log("Cliente excluído com sucesso!");
+                                            resolve(true); // Exclusão bem-sucedida
+                                        }
+                                        else {
+                                            console.log("Cliente não encontrado ou não pôde ser excluído.");
+                                            resolve(false); // Nenhum pet foi excluído (não encontrado)
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Cliente.prototype.verificarPetsDoCliente = function (dbName, cpf) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, _) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                _this.connection.query("SELECT COUNT(*) AS petCount FROM pet WHERE cpfDoDono = ?;", [cpf], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao verificar pets do cliente:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        var petCount = results[0].petCount; // Convertendo para number
+                                        resolve(petCount);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
     return Cliente;
 }());
 exports.Cliente = Cliente;

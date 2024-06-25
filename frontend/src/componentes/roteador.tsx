@@ -21,6 +21,7 @@ import CompraPS from "./compras/compra";
 import ListaCompras from "./compras/mostraCompra";
 
 type Produto = {
+    id?: number;
     nome: string;
     descricao: string;
     valor: number;
@@ -165,9 +166,9 @@ export default class Roteador extends Component<{}, State> {
         }
     }
 
-    excluirProduto(nomeProduto: string) {
+    excluirProduto(id_produto: number) {
         this.setState((prevState) => ({
-            produtos: prevState.produtos.filter((produto) => produto.nome !== nomeProduto),
+            produtos: prevState.produtos.filter((produto) => produto.id !== id_produto),
         }));
     }
 
@@ -207,7 +208,7 @@ export default class Roteador extends Component<{}, State> {
             clienteNome: compra.nomeCliente,
             itens: compra.itens,
         };
-    
+
         // Atualizando o estado de compras adicionando a nova compra
         this.setState((prevState) => ({
             compras: [...prevState.compras, novaCompra],
@@ -248,9 +249,6 @@ export default class Roteador extends Component<{}, State> {
                     <ExcluirCliente
                         tema="#e3f2fd"
                         excluirCliente={this.excluirCliente}
-                        clientes={clientes}
-                        pets={pets}
-                        atualizarPets={this.atualizarPets}
                     />
                 ) : tela === "cadastroPet" ? (
                     <FormularioCadastroPet tema="#e3f2fd" adicionarPet={this.adicionarPet} clientes={clientes} />
@@ -265,15 +263,15 @@ export default class Roteador extends Component<{}, State> {
                 ) : tela === "listarProduto" ? (
                     <ListaProduto produtos={produtos} />
                 ) : tela === "alterarProduto" ? (
-                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto}  />
+                    <AlterarProduto tema="#e3f2fd" alterarProduto={this.alterarProduto} />
                 ) : tela === "excluirProduto" ? (
-                    <ExcluirProduto tema="#e3f2fd" excluirProduto={this.excluirProduto} produtos={produtos} />
+                    <ExcluirProduto tema="#e3f2fd" excluirProduto={this.excluirProduto} />
                 ) : tela === "cadastroServico" ? (
                     <FormularioCadastroServico tema="#e3f2fd" adicionarServico={this.adicionarServico} />
                 ) : tela === "listarServico" ? (
                     <ListarServico servicos={servicos} />
                 ) : tela === "alterarServico" ? (
-                    <AlterarServico tema="#e3f2fd" alterarServico={this.alterarServico} servicos={servicos} />
+                    <AlterarServico tema="#e3f2fd" alterarServico={this.alterarServico} />
                 ) : tela === "excluirServico" ? (
                     <ExcluirServico tema="#e3f2fd" excluirServico={this.excluirServico} servicos={servicos} />
                 ) : tela === "compra" ? (
