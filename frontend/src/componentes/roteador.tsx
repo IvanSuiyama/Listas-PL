@@ -22,6 +22,7 @@ import ListaCompras from "./compras/mostraCompra";
 import TopClientes from "./registros/top10";
 import Top5ServicoseProdutos from "./registros/top5ServicoseProdutos";
 import Top5Clientes from "./registros/top5cli";
+import TopSePporReT from "./registros/topSePporReT";
 
 type Produto = {
     id?: number;
@@ -290,6 +291,8 @@ export default class Roteador extends Component<{}, State> {
                     <Top5ServicoseProdutos />
                 ) : tela === "Top5 valor" ? (
                     <Top5Clientes />
+                ) : tela === "S/P por tipo raça pet" ? (
+                    <TopSePporReT />
                 ) : null}
             </>
         );

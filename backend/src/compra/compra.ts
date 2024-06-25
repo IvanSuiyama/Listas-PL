@@ -181,6 +181,40 @@ export class Compra {
         });
     }
     
+    async buscarTop5SePporReT(dbName: string) {
+        return new Promise((resolve, reject) => {
+            this.connection.query(`USE ${dbName};`, async (useError, useResults) => {
+                if (useError) {
+                    console.error("Erro ao selecionar o banco de dados:", useError);
+                    reject(useError);
+                } else {
+                    console.log("Banco de dados selecionado com sucesso");
+    
+                    // Consulta SQL para buscar os top 5 produtos consumidos por tipo e raça de pet
+                    const query = `
+                        SELECT p.tipo AS tipoPet, p.raca AS racaPet,
+                               COUNT(c.nomeP) AS quantidadeProdutos
+                        FROM compras c
+                        JOIN pet p ON c.cpfCliente = p.cpfDoDono
+                        WHERE c.nomeP IS NOT NULL
+                        GROUP BY p.tipo, p.raca
+                        ORDER BY quantidadeProdutos DESC
+                        LIMIT 5
+                    `;
+    
+                    this.connection.query(query, (error, results) => {
+                        if (error) {
+                            console.error("Erro ao buscar top produtos consumidos por tipo e raça de pet:", error);
+                            reject(error);
+                        } else {
+                            resolve(results);
+                        }
+                    });
+                }
+            });
+        });
+    }
+    
     
     
     

@@ -791,3 +791,15 @@ app.get("/buscartop5cli", async(req: Request, res: Response) => {
         res.status(500).send('Erro ao buscar os top clientes que mais consumiram');
     }
 });
+
+app.get("/topSePporReT", async (req: Request, res: Response) => {
+    try {
+        // Substitua pelo nome do seu banco de dados
+        const top5SePporReT = await compraservice.buscarTop5SePporReT(dbName);
+
+        res.status(200).json(top5SePporReT);
+    } catch (error) {
+        console.error('Erro ao buscar top produtos e serviços por raça e tipo de pet:', error);
+        res.status(500).send('Erro ao buscar top produtos e serviços por raça e tipo de pet');
+    }
+});
