@@ -778,3 +778,16 @@ app.get('/top5PeS', async (req: Request, res: Response) => {
         res.status(500).send('Erro ao buscar os top produtos e serviços');
     }
 });
+
+
+app.get("/buscartop5cli", async(req: Request, res: Response) => {
+    try {
+        const dbName = 'seu_banco_de_dados'; // Substitua pelo nome do seu banco de dados
+        const top5ClientesMaisConsumiram = await compraservice.buscarTop5ClientesMaisConsumiram(dbName);
+
+        res.status(200).json(top5ClientesMaisConsumiram);
+    } catch (error) {
+        console.error('Erro ao buscar os top clientes que mais consumiram:', error);
+        res.status(500).send('Erro ao buscar os top clientes que mais consumiram');
+    }
+});
