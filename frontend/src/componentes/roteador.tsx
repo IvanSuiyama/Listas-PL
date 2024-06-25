@@ -19,6 +19,7 @@ import AlterarServico from "./servicos/alterarServico";
 import ExcluirServico from "./servicos/excluirServico";
 import CompraPS from "./compras/compra";
 import ListaCompras from "./compras/mostraCompra";
+import TopClientes from "./registros/top10";
 
 type Produto = {
     id?: number;
@@ -230,7 +231,7 @@ export default class Roteador extends Component<{}, State> {
                     { title: "Produtos", items: ["cadastroProduto", "listarProduto", "alterarProduto", "excluirProduto"] },
                     { title: "Serviços", items: ["cadastroServico", "listarServico", "alterarServico", "excluirServico"] },
                     { title: "Compras Serviços", items: ["compra", "mostraCompras"] },
-                    { title: "Registros", items: ["Top10 Quantidade", "Servicos/Produtos mais consumidos", "S/P por tipo raça pet", "Top5 valor"] }
+                    { title: "Registros", items: ["top10Cli", "Servicos/Produtos mais consumidos", "S/P por tipo raça pet", "Top5 valor"] }
                 ]}
             />
         );
@@ -281,6 +282,8 @@ export default class Roteador extends Component<{}, State> {
                     />
                 ) : tela === "mostraCompras" ? (
                     <ListaCompras />
+                ): tela === "top10Cli" ? (
+                    <TopClientes />
                 ) : null}
             </>
         );

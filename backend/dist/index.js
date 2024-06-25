@@ -482,7 +482,6 @@ app.post("/excluirPet", function (req, res) { return __awaiter(void 0, void 0, v
         }
     });
 }); });
-//bozinho
 app.put("/alterarProduto", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, id_prod, nome, valor, descricao, produtook, alteraProduto, error_15;
     return __generator(this, function (_b) {
@@ -607,7 +606,6 @@ app.get("/verificarPetsDoCliente", function (req, res) { return __awaiter(void 0
         }
     });
 }); });
-//bozinho
 app.put("/alterarServico", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, id_serv, nome, valor, descricao, servicoOk, alteraServico, error_19;
     return __generator(this, function (_b) {
@@ -840,7 +838,7 @@ app.post("/cadastrarCompra", function (req, res) { return __awaiter(void 0, void
                 nomeS = servico ? servico.nome : null;
                 valorP = produto ? produto.valor : null;
                 valorS = servico ? servico.valor : null;
-                return [4 /*yield*/, compraservice.cadastrarCompra(dbName, nomeCliente, nomeP, nomeS, valorP, valorS)];
+                return [4 /*yield*/, compraservice.cadastrarCompra(dbName, nomeCliente, cpfCliente, nomeP, nomeS, valorP, valorS)];
             case 7:
                 sucesso = _b.sent();
                 if (sucesso) {
@@ -877,6 +875,135 @@ app.get("/mostrarCompras", function (req, res) { return __awaiter(void 0, void 0
                 res.status(500).json({ error: 'Erro interno ao obter compras' });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
+        }
+    });
+}); });
+app.get('/Compras/Produtos/:cpf', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, quantidadeProdutos, error_27;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cpf = req.params.cpf;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, compraservice.buscarQuantidadeProdutosPorCPF(dbName, cpf)];
+            case 2:
+                quantidadeProdutos = _a.sent();
+                res.status(200).json({ quantidadeProdutos: quantidadeProdutos });
+                return [3 /*break*/, 4];
+            case 3:
+                error_27 = _a.sent();
+                console.error('Erro ao buscar quantidade de produtos:', error_27);
+                res.status(500).send('Erro ao buscar quantidade de produtos');
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get('/Compras/Servicos/:cpf', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cpf, quantidadeServicos, error_28;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                cpf = req.params.cpf;
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, compraservice.buscarQuantidadeServicosPorCPF(dbName, cpf)];
+            case 2:
+                quantidadeServicos = _a.sent();
+                res.status(200).json({ quantidadeServicos: quantidadeServicos });
+                return [3 /*break*/, 4];
+            case 3:
+                error_28 = _a.sent();
+                console.error('Erro ao buscar quantidade de serviços:', error_28);
+                res.status(500).send('Erro ao buscar quantidade de serviços');
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+app.get('/listarTopClientes', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var clientesResponse, clientesData, topClientes, i, cliente, quantidadeProdutosStr, produtosResult, error_29, quantidadeServicosStr, servicosResult, error_30, quantidadeProdutos, quantidadeServicos, totalCompras, error_31;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 14, , 15]);
+                return [4 /*yield*/, fetch('http://localhost:5000/listarClientes')];
+            case 1:
+                clientesResponse = _a.sent();
+                if (!clientesResponse.ok) {
+                    throw new Error('Erro ao buscar os clientes');
+                }
+                return [4 /*yield*/, clientesResponse.json()];
+            case 2:
+                clientesData = _a.sent();
+                topClientes = [];
+                i = 0;
+                _a.label = 3;
+            case 3:
+                if (!(i < clientesData.length)) return [3 /*break*/, 13];
+                cliente = clientesData[i];
+                quantidadeProdutosStr = '0';
+                _a.label = 4;
+            case 4:
+                _a.trys.push([4, 6, , 7]);
+                return [4 /*yield*/, compraservice.buscarQuantidadeProdutosPorCPF('seuNomeDeBancoDeDados', cliente.cpf)];
+            case 5:
+                produtosResult = _a.sent();
+                quantidadeProdutosStr = produtosResult; // Conversão assegurada para string
+                return [3 /*break*/, 7];
+            case 6:
+                error_29 = _a.sent();
+                console.error("Erro ao buscar quantidade de produtos para o cliente ".concat(cliente.nome, ":"), error_29);
+                return [3 /*break*/, 7];
+            case 7:
+                quantidadeServicosStr = '0';
+                _a.label = 8;
+            case 8:
+                _a.trys.push([8, 10, , 11]);
+                return [4 /*yield*/, compraservice.buscarQuantidadeServicosPorCPF('seuNomeDeBancoDeDados', cliente.cpf)];
+            case 9:
+                servicosResult = _a.sent();
+                quantidadeServicosStr = servicosResult; // Conversão assegurada para string
+                return [3 /*break*/, 11];
+            case 10:
+                error_30 = _a.sent();
+                console.error("Erro ao buscar quantidade de servi\u00E7os para o cliente ".concat(cliente.nome, ":"), error_30);
+                return [3 /*break*/, 11];
+            case 11:
+                quantidadeProdutos = parseFloat(quantidadeProdutosStr);
+                quantidadeServicos = parseFloat(quantidadeServicosStr);
+                totalCompras = quantidadeProdutos + quantidadeServicos;
+                // Adiciona cliente aos top clientes (mantendo apenas os 10 melhores)
+                topClientes.push({
+                    nome: cliente.nome,
+                    cpf: cliente.cpf,
+                    quantidadeProdutos: quantidadeProdutos,
+                    quantidadeServicos: quantidadeServicos,
+                    totalCompras: totalCompras
+                });
+                // Ordena os top clientes por quantidade total de compras (decrescente)
+                topClientes.sort(function (a, b) { return b.totalCompras - a.totalCompras; });
+                // Mantém apenas os top 10 clientes
+                if (topClientes.length > 10) {
+                    topClientes.splice(10);
+                }
+                _a.label = 12;
+            case 12:
+                i++;
+                return [3 /*break*/, 3];
+            case 13:
+                // Retorna os top 10 clientes
+                res.status(200).json(topClientes);
+                return [3 /*break*/, 15];
+            case 14:
+                error_31 = _a.sent();
+                console.error('Erro ao buscar os top clientes:', error_31);
+                res.status(500).send('Erro ao buscar os top clientes');
+                return [3 /*break*/, 15];
+            case 15: return [2 /*return*/];
         }
     });
 }); });

@@ -41,7 +41,7 @@ var Compra = /** @class */ (function () {
     function Compra(connection) {
         this.connection = connection;
     }
-    Compra.prototype.cadastrarCompra = function (dbName, nomeCliente, nomeP, nomeS, valorP, valorS) {
+    Compra.prototype.cadastrarCompra = function (dbName, nomeCliente, cpfCliente, nomeP, nomeS, valorP, valorS) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
@@ -53,7 +53,7 @@ var Compra = /** @class */ (function () {
                             }
                             else {
                                 console.log("Banco de dados selecionado com sucesso");
-                                _this.connection.query("INSERT INTO compras (nomeCliente, nomeP, nomeS, valorP, valorS) VALUES(?, ?, ?, ?, ?)", [nomeCliente, nomeP, nomeS, valorP, valorS], function (error, results) {
+                                _this.connection.query("INSERT INTO compras (nomeCliente, cpfCliente, nomeP, nomeS, valorP, valorS) VALUES(?, ?, ?, ?, ?, ?)", [nomeCliente, cpfCliente, nomeP, nomeS, valorP, valorS], function (error, results) {
                                     if (error) {
                                         console.log("Erro ao cadastrar Compra");
                                         reject(error);
@@ -88,6 +88,62 @@ var Compra = /** @class */ (function () {
                                     }
                                     else {
                                         resolve(results);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Compra.prototype.buscarQuantidadeServicosPorCPF = function (dbName, cpf) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, useResults) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso");
+                                _this.connection.query("SELECT COUNT(*) AS quantidadeServicos FROM compras WHERE cpfCliente = ? AND nomeS IS NOT NULL", [cpf], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar quantidade de serviços:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        var quantidadeServicos = results[0].quantidadeServicos;
+                                        resolve(quantidadeServicos);
+                                    }
+                                });
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    Compra.prototype.buscarQuantidadeProdutosPorCPF = function (dbName, cpf) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new Promise(function (resolve, reject) {
+                        _this.connection.query("USE ".concat(dbName, ";"), function (useError, useResults) {
+                            if (useError) {
+                                console.error("Erro ao selecionar o banco de dados:", useError);
+                                reject(useError);
+                            }
+                            else {
+                                console.log("Banco de dados selecionado com sucesso");
+                                _this.connection.query("SELECT COUNT(*) AS quantidadeProdutos FROM compras WHERE cpfCliente = ? AND nomeP IS NOT NULL", [cpf], function (error, results) {
+                                    if (error) {
+                                        console.error("Erro ao buscar quantidade de produtos:", error);
+                                        reject(error);
+                                    }
+                                    else {
+                                        var quantidadeProdutos = results[0].quantidadeProdutos;
+                                        resolve(quantidadeProdutos);
                                     }
                                 });
                             }

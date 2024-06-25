@@ -140,7 +140,6 @@ app.post("/cadastroProduto", async (req, res) => {
     }
 })
 
-
 app.post("/cadastroServico", async (req, res) => {
     const { nome, descricao, valor } = req.body
 
@@ -252,7 +251,6 @@ app.put("/alterarPet", async (req, res) => {
 });
 
 
-
 app.get("/buscarPetPorCpf", async (req: Request, res: Response) => {
     const cpf: string = req.query.cpf as string;
 
@@ -318,7 +316,7 @@ app.post("/excluirPet", async (req, res) => {
     }
 });
 
-//bozinho
+
 app.put("/alterarProduto", async (req, res) => {
     const { id_prod, nome, valor, descricao } = req.body;
 
@@ -398,7 +396,7 @@ app.get("/verificarPetsDoCliente", async (req:Request, res:Response) => {
     }
 })
 
-//bozinho
+
 app.put("/alterarServico", async (req: Request, res: Response) => {
     const { id_serv, nome, valor, descricao } = req.body;
 
@@ -558,7 +556,7 @@ app.post("/cadastrarCompra", async (req, res) => {
         const valorP = produto ? produto.valor : null;
         const valorS = servico ? servico.valor : null;
 
-        const sucesso = await compraservice.cadastrarCompra(dbName, nomeCliente, nomeP, nomeS, valorP, valorS);
+        const sucesso = await compraservice.cadastrarCompra(dbName, nomeCliente, cpfCliente, nomeP, nomeS, valorP, valorS);
 
         if (sucesso) {
             res.status(200).send({ message: "Compra cadastrada com sucesso" });
@@ -582,5 +580,101 @@ app.get("/mostrarCompras", async (req, res) => {
         res.status(500).json({ error: 'Erro interno ao obter compras' });
     }
 })
+
+app.get('/Compras/Produtos/:cpf', async (req: Request, res: Response) => {
+    const { cpf } = req.params;
+
+    try {
+        const quantidadeProdutos = await compraservice.buscarQuantidadeProdutosPorCPF(dbName, cpf);
+
+        res.status(200).json({ quantidadeProdutos });
+    } catch (error) {
+        console.error('Erro ao buscar quantidade de produtos:', error);
+        res.status(500).send('Erro ao buscar quantidade de produtos');
+    }
+});
+
+app.get('/Compras/Servicos/:cpf', async (req: Request, res: Response) => {
+    const { cpf } = req.params;
+
+    try {
+        const quantidadeServicos = await compraservice.buscarQuantidadeServicosPorCPF(dbName, cpf);
+
+        res.status(200).json({ quantidadeServicos });
+    } catch (error) {
+        console.error('Erro ao buscar quantidade de serviços:', error);
+        res.status(500).send('Erro ao buscar quantidade de serviços');
+    }
+});
+
+
+app.get('/listarTopClientes', async (req: Request, res: Response) => {
+    try {
+        // Simula a lista de clientes obtida dinamicamente do backend
+        const clientesResponse = await fetch('http://localhost:5000/listarClientes');
+        if (!clientesResponse.ok) {
+            throw new Error('Erro ao buscar os clientes');
+        }
+        const clientesData = await clientesResponse.json();
+
+        // Array para armazenar os top clientes
+        const topClientes = [];
+
+        // Itera sobre os clientes para buscar e calcular a quantidade de produtos e serviços
+        for (let i = 0; i < clientesData.length; i++) {
+            const cliente = clientesData[i];
+
+            // Busca quantidade de produtos
+            let quantidadeProdutosStr: string = '0'; // Valor padrão inicial
+            try {
+                const produtosResult = await compraservice.buscarQuantidadeProdutosPorCPF('seuNomeDeBancoDeDados', cliente.cpf);
+                quantidadeProdutosStr = produtosResult as string; // Conversão assegurada para string
+            } catch (error) {
+                console.error(`Erro ao buscar quantidade de produtos para o cliente ${cliente.nome}:`, error);
+                // Aqui podemos manter o valor padrão '0' ou tratar conforme necessário
+            }
+
+            // Busca quantidade de serviços
+            let quantidadeServicosStr: string = '0'; // Valor padrão inicial
+            try {
+                const servicosResult = await compraservice.buscarQuantidadeServicosPorCPF('seuNomeDeBancoDeDados', cliente.cpf);
+                quantidadeServicosStr = servicosResult as string; // Conversão assegurada para string
+            } catch (error) {
+                console.error(`Erro ao buscar quantidade de serviços para o cliente ${cliente.nome}:`, error);
+                // Aqui podemos manter o valor padrão '0' ou tratar conforme necessário
+            }
+
+            // Converte para número de ponto flutuante (float)
+            const quantidadeProdutos = parseFloat(quantidadeProdutosStr);
+            const quantidadeServicos = parseFloat(quantidadeServicosStr);
+
+            // Calcula quantidade total de compras (produtos + serviços)
+            const totalCompras = quantidadeProdutos + quantidadeServicos;
+
+            // Adiciona cliente aos top clientes (mantendo apenas os 10 melhores)
+            topClientes.push({
+                nome: cliente.nome,
+                cpf: cliente.cpf,
+                quantidadeProdutos,
+                quantidadeServicos,
+                totalCompras
+            });
+
+            // Ordena os top clientes por quantidade total de compras (decrescente)
+            topClientes.sort((a, b) => b.totalCompras - a.totalCompras);
+
+            // Mantém apenas os top 10 clientes
+            if (topClientes.length > 10) {
+                topClientes.splice(10);
+            }
+        }
+
+        // Retorna os top 10 clientes
+        res.status(200).json(topClientes);
+    } catch (error) {
+        console.error('Erro ao buscar os top clientes:', error);
+        res.status(500).send('Erro ao buscar os top clientes');
+    }
+});
 
 
